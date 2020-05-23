@@ -4,6 +4,7 @@ import com.example.paintingshop.enums.UserTypeEnum;
 import com.example.paintingshop.mapper.UserMapper;
 import com.example.paintingshop.model.User;
 import com.example.paintingshop.model.UserExample;
+import com.example.paintingshop.provider.Md5Provider;
 import com.example.paintingshop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,8 @@ public class RegisterController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private Md5Provider md5Provider;
 
     @GetMapping("/register")
     public String register() {
@@ -47,7 +50,7 @@ public class RegisterController {
 
         User user = new User();
         user.setName(username);
-        user.setPassword(password);
+        user.setPassword(md5Provider.md5(password));
         user.setBio("还没有个人描述");
         String token = UUID.randomUUID().toString();
         user.setToken(token);

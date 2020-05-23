@@ -8,6 +8,7 @@ import com.example.paintingshop.exception.CustomizeErrorCode;
 import com.example.paintingshop.exception.CustomizeException;
 import com.example.paintingshop.mapper.FollowMapper;
 import com.example.paintingshop.model.*;
+import com.example.paintingshop.provider.Md5Provider;
 import com.example.paintingshop.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,6 +33,10 @@ public class UsersController {
     private OrderService orderService;
     @Autowired
     private FollowService followService;
+    @Autowired
+    private Md5Provider md5Provider;
+
+
 
     @GetMapping("/users/{name}/{action}")
     public String users(@PathVariable(name = "name") String name,
@@ -102,7 +107,7 @@ public class UsersController {
 
             User user1 = new User();
             user1.setId(user.getId());
-            user1.setPassword(modifyDTO.getContent());
+            user1.setPassword(md5Provider.md5(modifyDTO.getContent()));
 
             userService.upDate(user1);
 

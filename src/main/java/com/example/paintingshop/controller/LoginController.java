@@ -4,6 +4,7 @@ package com.example.paintingshop.controller;
 import com.example.paintingshop.exception.CustomizeErrorCode;
 import com.example.paintingshop.exception.CustomizeException;
 import com.example.paintingshop.model.User;
+import com.example.paintingshop.provider.Md5Provider;
 import com.example.paintingshop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,8 @@ import javax.servlet.http.HttpServletResponse;
 public class LoginController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private Md5Provider md5Provider;
 
 
     @GetMapping("/login")
@@ -52,7 +55,7 @@ public class LoginController {
 
         User user = new User();
         user.setName(username);
-        user.setPassword(password);
+        user.setPassword(md5Provider.md5(password));
         User user1 = userService.login(user);
         if (user1 != null) {
             response.addCookie(new Cookie("token", user1.getToken()));

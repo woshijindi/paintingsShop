@@ -1,19 +1,16 @@
 package com.example.paintingshop.service;
 
 
-import com.example.paintingshop.dto.EnlistDTO;
 import com.example.paintingshop.dto.OrderDTO;
 import com.example.paintingshop.dto.PaginationDTO;
 import com.example.paintingshop.enums.NotificationStateEnum;
 import com.example.paintingshop.enums.NotificationTypeEnum;
 import com.example.paintingshop.mapper.*;
 import com.example.paintingshop.model.*;
-import com.sun.org.apache.xpath.internal.operations.Or;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.dc.pr.PRError;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
