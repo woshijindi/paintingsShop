@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>画商店</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="css/paintingshop.css">
+    <script src="/js/paintingshop.js"></script>
+
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <!--自动关闭-->
+    <script type="application/javascript">
+        window.onload = function () {
+            var closable = window.localStorage.getItem("closable");
+            if (closable == "true") {
+                window.close();
+                window.localStorage.removeItem("closable");
+            }
+        }
+    </script>
+
+</head>
+
+<body>
+<div th:insert="navigation :: nav"></div>
+
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 index-title">
+    <h1 class="text-center index-content-title">找好画师，完成企划，就这么简单！</h1>
+</div>
+
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 index-content">
+    <p class="text-center index-content-size">仅需3分钟发布企划，即可收到数位画师应征。</p>
+    <p class="text-center index-content-size">15位精选画师在此等待，只为创作属于您的精美画作。</p>
+</div>
+
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 index-content index-button-top">
+    <button type="button" class="index-button-one" onclick="window.location.href='/login'">立刻登录</button>
+    <button type="button" class="index-button-two" onclick="window.location.href='/register'">注册账号</button>
+</div>
+
+<div th:insert="footer :: foot"></div>
+
+
+</body>
+</html>

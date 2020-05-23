@@ -1,0 +1,143 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>我的工作板-画商店</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/css/paintingshop.css">
+    <link rel="stylesheet" href="/css/editormd.preview.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-select.min.css">
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/moment.js"></script>
+    <script src="/js/paintingshop.js"></script>
+    <script src="/js/editormd.min.js" type="application/javascript"></script>
+    <script src="/js/lib/marked.min.js"></script>
+    <script src="/js/lib/prettify.min.js"></script>
+    <script src="/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="/js/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script src="/js/bootstrap-select.min.js"></script>
+    <script src="/js/defaults-zh_CN.min.js"></script>
+    <script src="/js/defaults-zh_CN.min.js"></script>
+
+</head>
+
+<body>
+<div th:insert="navigation :: nav"></div>
+
+<div class="container-fluid board-main">
+    <div class="row center-block panel panel-default">
+
+        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+            <div class="margin-40px">
+                <a th:href="@{'/demand/'+${enlist.demand.id}}" style="text-decoration:none;">
+                    <h3 class="demand-title-size"><span th:text="${enlist.demand.title}"></span></h3>
+                </a>
+
+                <span class="text-desc">
+                    稿件用于:<span th:text="${enlist.demand.purpose}"></span>
+                    <span class="margin-left-22px">稿件规格:</span>
+                    <span th:text="${enlist.demand.specifications}"></span>
+                    <span class="margin-left-22px">截稿日期:</span>
+                    <span th:text="${enlist.demand.closingDate}"></span>
+                    </span>
+                <br>
+            </div>
+        </div>
+        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
+            <div class="row">
+                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 demand-enlist-avatar">
+                    <a th:href="@{'/users/'+${enlist.user.name}+'/demands'}">
+                        <img class="demand-enlist-avatar-size img-circle" th:src="${enlist.user.avatarUrl}">
+                    </a>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 demand-enlist-name-style">
+                    <a th:href="@{'/users/'+${enlist.user.name}+'/demands'}">
+                        <span class="demand-enlist-name-size" th:text="${enlist.user.name}"></span>
+                    </a>
+
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 demand-enlist-name-style margin-right--60px">
+                    <a th:href="@{'/webSocketPrivate/'+${enlist.user.id}}"
+                       target="_blank"
+                       style="text-decoration:none;">
+                        <button class="users-left-button1" type="button">和他聊聊</button>
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 demand-enlist-name-style">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${isFollow==0}">
+                        <input type="hidden" name="heroineId" id="heroineId"
+                               th:value="${enlist.user.id}">
+                        <button class="users-left-button2" type="button" onclick="follow()">关注
+                        </button>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${isFollow==1}">
+                        <input type="hidden" name="heroineId" id="heroineId"
+                               th:value="${enlist.user.id}">
+                        <button class="users-left-button3" type="button" onclick="unFollow()">取消关注
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <!--上传稿件-->
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 panel panel-default">
+        <div class="margin-20px">
+            <span>上传稿件</span>
+        </div>
+        <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12 margin-top-0px">
+
+        <form action="/drawSend" method="post" enctype="multipart/form-data"  th:if="${enlist.demand.paintingsUrl==null}">
+
+
+            <div id="preview">
+                <input type="file" name="file" id="file" accept="image/*" value="图片上传">
+            </div>
+            <script>
+                var preview = document.getElementById("preview");
+                var file = document.getElementById("file");
+                var img = document.createElement("img");
+
+                file.onchange = function () {
+                    var fileReader = new FileReader();
+                    fileReader.readAsDataURL(this.files[0]);
+                    fileReader.onload = function () {
+                        img.src = fileReader.result;
+                        img.style.maxWidth = "980px";
+                        preview.appendChild(img);
+                    }
+                }
+            </script>
+
+            <div class="container-fluid main">
+                <div>
+                    <input type="hidden" name="demandId" id="demandId"
+                           th:value="${enlist.demandId}">
+                    <input type="hidden" name="enlistId" id="enlistId"
+                           th:value="${enlist.id}">
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                        <button type="submit" class="btn btn-success btn-publish">提交</button>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+
+        <div class="paintings-paintings-style" th:if="${enlist.demand.paintingsUrl!=null}">
+            <img class="board-paintings" th:src="${enlist.demand.paintingsUrl}">
+        </div>
+
+    </div>
+</div>
+
+<div th:insert="footer :: foot"></div>
+
+</body>
+</html>

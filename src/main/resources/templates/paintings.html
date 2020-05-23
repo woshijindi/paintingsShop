@@ -1,0 +1,153 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>发布企划 - 画商店</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/css/paintingshop.css">
+    <link rel="stylesheet" href="/css/editormd.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-select.min.css">
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/paintingshop.js"></script>
+    <script src="/js/editormd.min.js" type="application/javascript"></script>
+    <script src="/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="/js/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script src="/js/bootstrap-select.min.js"></script>
+    <script src="/js/defaults-zh_CN.min.js"></script>
+    <script src="/js/defaults-zh_CN.min.js"></script>
+
+
+</head>
+
+<body>
+<div th:insert="navigation :: nav"></div>
+
+<div class="container-fluid main">
+    <div class="row">
+
+        <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 paintings-left-style">
+            <div class="panel panel-default">
+                <div class="center-block demand-avatar-width">
+                    <a th:href="@{'/users/'+${user.name}+'/demands'}">
+                        <img class="demand-avatar-size img-circle" th:src="${user.avatarUrl}">
+                    </a>
+                </div>
+                <div>
+                    <h4 class="demand-name-top text-center">
+                        <span th:text="${user.name}"></span>
+                    </h4>
+                </div>
+                <div class="row" th:if="${isFollow!=2}">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 margin-left-10px">
+                        <a th:href="@{'/webSocketPrivate/'+${user.id}}"
+                           target="_blank"
+                           style="text-decoration:none;">
+                            <button class="users-left-button1" type="button">和他聊聊</button>
+                        </a>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 margin-left--20px" th:if="${isFollow==0}">
+                        <input type="hidden" name="heroineId" id="heroineId"
+                               th:value="${user.id}">
+                        <button class="users-left-button2" type="button" onclick="follow()">关注
+                        </button>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 margin-left--20px" th:if="${isFollow==1}">
+                        <input type="hidden" name="heroineId" id="heroineId"
+                               th:value="${user.id}">
+                        <button class="users-left-button3" type="button" onclick="unFollow()">取消关注
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="panel panel-default paintingsSquare-left-padding">
+
+                <div class="paintingsSquare-left-title">此作品类别:
+                    <span class="paintings-tag" th:text="${paintings.type}"></span>
+                </div>
+                <div>
+                    <a style="text-decoration:none;" href="/paintingsSquare/type/0/场景">
+                        <span class="label label-info paintingsSquare-left-tag">场景</span>
+                    </a>
+                    <a style="text-decoration:none;" href="/paintingsSquare/type/0/Q版">
+                        <span class="label label-info paintingsSquare-left-tag">Q版</span>
+                    </a>
+                    <a style="text-decoration:none;" href="/paintingsSquare/type/0/插画">
+                        <span class="label label-info paintingsSquare-left-tag">插画</span>
+                    </a>
+                    <a style="text-decoration:none;" href="/paintingsSquare/type/0/角色">
+                        <span class="label label-info paintingsSquare-left-tag">角色</span>
+                    </a>
+                    <a style="text-decoration:none;" href="/paintingsSquare/type/0/其他">
+                        <span class="label label-info paintingsSquare-left-tag">其他</span>
+                    </a>
+                </div>
+                <hr>
+
+                <div class="paintingsSquare-left-title">此作品风格:
+                    <span class="paintings-tag" th:text="${paintings.style}"></span>
+                </div>
+                <div>
+                    <a style="text-decoration:none;" href="/paintingsSquare/style/1/古风">
+                        <span class="label label-info paintingsSquare-left-tag">古风</span>
+                    </a>
+                    <a style="text-decoration:none;" href="/paintingsSquare/style/1/欧美">
+                        <span class="label label-info paintingsSquare-left-tag">欧美</span>
+                    </a>
+                    <a style="text-decoration:none;" href="/paintingsSquare/style/1/日系">
+                        <span class="label label-info paintingsSquare-left-tag">日系</span>
+                    </a>
+                    <a style="text-decoration:none;" href="/paintingsSquare/style/1/其他">
+                        <span class="label label-info paintingsSquare-left-tag">其他</span>
+                    </a>
+                </div>
+
+                <hr>
+
+                <div class="paintingsSquare-left-title">此作品画法:
+                    <span class="paintings-tag" th:text="${paintings.method}"></span>
+                </div>
+                <div>
+                    <a style="text-decoration:none;" href="/paintingsSquare/method/2/厚涂">
+                        <span class="label label-info paintingsSquare-left-tag">厚涂</span>
+                    </a>
+                    <a style="text-decoration:none;" href="/paintingsSquare/method/2/水彩">
+                        <span class="label label-info paintingsSquare-left-tag">水彩</span>
+                    </a>
+                    <a style="text-decoration:none;" href="/paintingsSquare/method/2/写实">
+                        <span class="label label-info paintingsSquare-left-tag">写实</span>
+                    </a>
+                    <a style="text-decoration:none;" href="/paintingsSquare/method/2/赛璐璐">
+                        <span class="label label-info paintingsSquare-left-tag">赛璐璐</span>
+                    </a>
+                    <a style="text-decoration:none;" href="/paintingsSquare/method/2/其他">
+                        <span class="label label-info paintingsSquare-left-tag">其他</span>
+                    </a>
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+        <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12 panel panel-default">
+            <div class="paintings-paintings-style">
+                <img class="img-rounded paintings-paintings" th:src="${paintings.paintingsUrl}">
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div th:insert="footer :: foot"></div>
+
+
+</body>
+</html>

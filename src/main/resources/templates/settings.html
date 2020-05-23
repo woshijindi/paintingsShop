@@ -1,0 +1,160 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>设置 - 画商店</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/css/paintingshop.css">
+    <script src="/js/paintingshop.js"></script>
+
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+<div th:insert="navigation :: nav"></div>
+
+<div class="container-fluid main center-block">
+
+    <!--个人信息-->
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+        <div class="center-block">
+            <div class="center-block setting-width">
+
+                <div class="list-group">
+                    <div class="list-group-item setting-list_style">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                            <span>昵称</span>
+                        </div>
+                        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                            <span class="setting-list_word1" th:text="${session.user.name}"></span>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                            <span class="glyphicon glyphicon-ok-sign setting-list_ok" aria-hidden="true"></span>
+                            <span class="setting-list_word1">已绑定</span>
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                            <span class="setting-list_modify"></span>
+                        </div>
+                    </div>
+                    <div class="list-group-item setting-list_style">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                            <span>密码</span>
+                        </div>
+                        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                            <span>********</span>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                            <span class="glyphicon glyphicon-ok-sign setting-list_ok" aria-hidden="true"></span>
+                            <span class="setting-list_word1">已设置</span>
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                            <a href="javascript:void(0);" onclick="showPasswordApply()">
+                                <span class="setting-list_modify">修改</span>
+                            </a>
+                            <!--修改密码弹窗-->
+                            <div class="modal fade" id="passwordFileMModal" role="dialog"
+                                 aria-labelledby="exampleModalLabel"
+                                 aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title demand-tips-size" id="passwordFileTitle">修改登录密码</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form>
+                                                <label for="content"
+                                                       class="col-form-label margin-top-15px">登陆密码：</label>
+                                                <textarea class="form-control" rows="1" id="content"
+                                                          maxlength="12"
+                                                          placeholder="输入新的登陆密码(最多12位)"
+                                                          style="resize: none"></textarea>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="demand-enlist-selected-button"
+                                                    id="createFileSureBut"
+                                                    onclick="modifyPassword()">确定
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list-group-item setting-list_style">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                            <span>支付宝</span>
+                        </div>
+                        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                            <span class="setting-list_word1" th:text="${session.user.alipayNumber}"></span>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" th:if="${session.user.alipayNumber != null}">
+                            <span class="glyphicon glyphicon-ok-sign setting-list_ok" aria-hidden="true"></span>
+                            <span class="setting-list_word1">已绑定</span>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" th:if="${session.user.alipayNumber == null}">
+                            <span class="glyphicon glyphicon-ok-sign setting-list_null" aria-hidden="true"></span>
+                            <span class="setting-list_word1">未绑定</span>
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" th:if="${session.user.alipayNumber != null}">
+                            <a href="javascript:void(0);" onclick="showAlipayApply()">
+                                <span class="setting-list_modify">修改</span>
+                            </a>
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" th:if="${session.user.alipayNumber == null}">
+                            <a href="javascript:void(0);" onclick="showAlipayApply()">
+                                <span class="setting-list_set">设置</span>
+                            </a>
+                        </div>
+                        <!--修改支付宝弹窗-->
+                        <div class="modal fade" id="alipayFileMModal" role="dialog" aria-labelledby="exampleModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title demand-tips-size" id="alipayFileTitle">修改支付宝账户</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form>
+                                            <label for="content" class="col-form-label margin-top-15px">支付宝账号：</label>
+                                            <textarea class="form-control" rows="1" id="contentAlipay"
+                                                      maxlength="11"
+                                                      placeholder="输入新的支付宝账号"
+                                                      style="resize: none"></textarea>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="demand-enlist-selected-button"
+                                                id="createFileSureBut"
+                                                onclick="modifyAlipay()">确定
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div th:insert="footer :: foot"></div>
+
+
+</body>
+</html>

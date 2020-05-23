@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>登录 - 画商店</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="css/paintingshop.css">
+    <script src="/js/paintingshop.js"></script>
+
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+
+</head>
+<body>
+<div th:insert="navigation :: nav"></div>
+
+<div class="panel panel-default center-block login-main">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12 margin-top-60px">
+                <h1 class="login-logo">登录-画商店</h1>
+                <form class="navbar-form navbar-left margin-left-120px" action="/login" method="post">
+                    <div class="form-group">
+                        <input type="text" name="username" th:value="${username}" class="form-control login-box margin-top-15px"
+                               placeholder="输入用户名">
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <input type="password" name="password" th:value="${password}" class="form-control login-box margin-top-10px"
+                               placeholder="输入密码">
+                    </div>
+                    <br>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 login-error"
+                         th:text="${error}"
+                         th:if="${error != null}">
+                    </div>
+                    <br>
+                    <button type="submit" class="btn btn-info login-button">登录</button>
+                    <br>
+                    <a href="/register">注册新账号</a>
+                    <a class="margin-left-58px" href="/register">忘记密码？</a>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div th:insert="footer :: foot"></div>
+
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>上传作品 - 画商店</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/css/paintingshop.css">
+    <link rel="stylesheet" href="/css/editormd.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-select.min.css">
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/editormd.min.js" type="application/javascript"></script>
+    <script src="/js/paintingshop.js"></script>
+    <script src="/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="/js/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script src="/js/bootstrap-select.min.js"></script>
+    <script src="/js/defaults-zh_CN.min.js"></script>
+    <script src="/js/defaults-zh_CN.min.js"></script>
+</head>
+
+<body>
+<div th:insert="navigation :: nav"></div>
+
+<div class="container-fluid main">
+
+    <div class="publish-style panel panel-default">
+        <h2 class="center-block publish-title">上传作品</h2>
+        <h5 class="center-block publish-title-content">上传你的作品，让更多人看到你吧！</h5>
+        <hr>
+        <form action="/drawUpload" method="post" enctype="multipart/form-data">
+
+
+            <div class="form-group publish-little-content">
+                <label class="publish-little-title" for="paintingsType">作品类别</label>
+                <select class="selectpicker" id="paintingsType" name="paintingsType">
+                    <option value="1">其他</option>
+                    <option value="2">场景</option>
+                    <option value="3">Q版</option>
+                    <option value="4">插画</option>
+                    <option value="5">角色</option>
+                </select>
+            </div>
+
+            <div class="form-group publish-little-content">
+                <label class="publish-little-title" for="paintingsStyle">作品风格</label>
+                <select class="selectpicker" id="paintingsStyle" name="paintingsStyle">
+                    <option value="1">其他</option>
+                    <option value="2">古风</option>
+                    <option value="3">欧美</option>
+                    <option value="4">日系</option>
+                </select>
+            </div>
+            <div class="form-group publish-little-content">
+                <label class="publish-little-title" for="paintingsMethod">作品画法</label>
+                <select class="selectpicker" id="paintingsMethod" name="paintingsMethod">
+                    <option value="1">其他</option>
+                    <option value="2">赛璐璐</option>
+                    <option value="3">水彩</option>
+                    <option value="4">写实</option>
+                    <option value="5">厚涂</option>
+                </select>
+            </div>
+
+            <div class="container-fluid main">
+                <button type="submit" class="btn btn-success btn-publish">提交</button>
+            </div>
+
+            <div id="preview">
+                <input type="file" name="file" id="file" accept="image/*" value="图片上传">
+            </div>
+            <script>
+                var preview = document.getElementById("preview");
+                var file = document.getElementById("file");
+                var img = document.createElement("img");
+
+                file.onchange = function () {
+                    var fileReader = new FileReader();
+                    fileReader.readAsDataURL(this.files[0]);
+                    fileReader.onload = function () {
+                        img.src = fileReader.result;
+                        img.style.maxWidth = "855px";
+                        preview.appendChild(img);
+                    }
+                }
+            </script>
+
+
+        </form>
+
+
+    </div>
+
+
+</div>
+
+<div th:insert="footer :: foot"></div>
+
+
+</body>
+</html>

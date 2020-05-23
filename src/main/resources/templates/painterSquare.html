@@ -1,0 +1,87 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>发现大神 - 画商店</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/css/paintingshop.css">
+    <script src="/js/paintingshop.js"></script>
+
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+<div th:insert="navigation :: nav"></div>
+
+
+<div class="container-fluid main">
+
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 panel panel-default painterSquare-tyle">
+            <h2><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>发现大神</h2>
+            <hr>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:each="user : ${pagination.userDTOs}">
+                <div class="row painterSquare-user-style panel panel-default">
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 demand-enlist-avatar">
+                        <a th:href="@{'/users/'+${user.name}+'/demands'}">
+                            <img class="demand-enlist-avatar-size img-circle" th:src="${user.avatarUrl}">
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 demand-enlist-name-style">
+                        <a th:href="@{'/users/'+${user.name}+'/demands'}">
+                            <span class="demand-enlist-name-size" th:text="${user.name}"></span>
+                        </a>
+                        <br>
+                        <span class="text-desc"></span>
+                    </div>
+                    <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 margin-top-15px"
+                             th:each="paintings : ${user.paintingsList}">
+                            <a th:href="@{'/paintings/'+${paintings.id}}">
+                                <img class="demand-enlist-paintings-size img-rounded"
+                                     th:src="${paintings.paintingsUrl}">
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li th:if="${pagination.showFirstPage}">
+                        <a href="/painterSquare?page=1" aria-label="First">
+                            <span aria-hidden="true">&lt;&lt;</span>
+                        </a>
+                    </li>
+                    <li th:if="${pagination.showPrevious}">
+                        <a th:href="@{/painterSquare(page=${pagination.page - 1})}" aria-label="Previous">
+                            <span aria-hidden="true">&lt;</span>
+                        </a>
+                    </li>
+                    <li th:each="page : ${pagination.pages}" th:class="${pagination.page==page}?'active':''">
+                        <a th:href="@{/painterSquare(page=${page})}" th:text="${page}">
+                        </a>
+                    </li>
+                    <li th:if="${pagination.showNext}">
+                        <a th:href="@{/painterSquare(page=${pagination.page + 1})}" aria-label="Next">
+                            <span aria-hidden="true">&gt;</span>
+                        </a>
+                    </li>
+                    <li th:if="${pagination.showEndPage}">
+                        <a th:href="@{/painterSquare(page=${pagination.totalPage})}" aria-label="End">
+                            <span aria-hidden="true">&gt;&gt;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+</div>
+<div th:insert="footer :: foot"></div>
+
+
+</body>
+</html>

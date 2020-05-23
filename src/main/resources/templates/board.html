@@ -1,0 +1,263 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>我的工作板-画商店</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/css/paintingshop.css">
+    <link rel="stylesheet" href="/css/editormd.preview.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-select.min.css">
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/moment.js"></script>
+    <script src="/js/paintingshop.js"></script>
+    <script src="/js/editormd.min.js" type="application/javascript"></script>
+    <script src="/js/lib/marked.min.js"></script>
+    <script src="/js/lib/prettify.min.js"></script>
+    <script src="/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="/js/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script src="/js/bootstrap-select.min.js"></script>
+    <script src="/js/defaults-zh_CN.min.js"></script>
+    <script src="/js/defaults-zh_CN.min.js"></script>
+
+</head>
+
+<body>
+<div th:insert="navigation :: nav"></div>
+
+<div class="container-fluid board-main">
+    <div class="row center-block">
+
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 panel panel-default">
+            <div class="margin-40px">
+                <a th:href="@{'/demand/'+${demand.id}}" style="text-decoration:none;">
+                    <h3 class="demand-title-size"><span th:text="${demand.title}"></span></h3>
+                </a>
+                <span class="text-desc">
+                    稿件用于:<span th:text="${demand.purpose}"></span>
+                    <span class="margin-left-130px">期望价格:</span>
+                    <span th:text="${demand.price}"></span>
+                    <span class="margin-left-130px">截稿日期:</span>
+                    <span th:text="${demand.closingDate}"></span>
+                    </span>
+                <br>
+            </div>
+        </div>
+
+        <!--应征列表-->
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 panel panel-default">
+            <div class="margin-20px">
+                <span>应征画师列表</span>
+                <span class="margin-left-510px demand-enlistCount-size">本企划共应征画师</span>
+                <span class="demand-enlistCount-size" th:text="${demand.enlistCount}"></span>
+                <span class="demand-enlistCount-size">名</span>
+            </div>
+            <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12 margin-top-0px">
+
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 margin-bottom-30px" th:if="${enlists.size()==0}">
+                <span class="demand-enlist-null">这里空空如也</span>
+            </div>
+
+            <!--应征信息,正在招募-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:each="enlist : ${enlists}"
+                 th:if="${demand.state==0}">
+                <div class="row board-enlist-style panel panel-default" th:if="${enlist.state!=3}">
+                    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 demand-enlist-avatar">
+                            <a th:href="@{'/users/'+${enlist.user.name}+'/demands'}">
+                                <img class="demand-enlist-avatar-size img-circle" th:src="${enlist.user.avatarUrl}">
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 demand-enlist-name-style">
+                            <span class="demand-enlist-name-size" th:text="${enlist.user.name}"></span>
+                            <br>
+                            <span class="text-desc">共0条评价</span>
+                        </div>
+                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 margin-top-15px"
+                                 th:each="paintings : ${enlist.paintingsList}">
+                                <img class="demand-enlist-paintings-size img-rounded"
+                                     th:src="${paintings.paintingsUrl}">
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 board-content-style">
+                            <div class="board-content-word-title">应征留言：</div>
+                            <div class="board-content-word-content" th:text="${enlist.content}"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                        <div class="board-content-line"></div>
+                        <div class="board-content-right">
+                            <div class="margin-top-30px">
+                                <span class="text-desc">期望稿酬</span>
+                                <br>
+                                <span class="board-content-right-word" th:text="${enlist.price}"></span>
+                                <span class="board-content-right-size">RMB</span>
+                            </div>
+                            <div class="margin-top-5px">
+                                <span class="text-desc">预计完成日期</span>
+                                <br>
+                                <span class="board-content-right-word" th:text="${enlist.closingDate}"></span>
+                            </div>
+                            <div>
+                                <a th:href="@{'/webSocketPrivate/'+${enlist.user.id}}"
+                                   target="_blank"
+                                   style="text-decoration:none;">
+                                    <button class="board-content-button" type="button">联系画师</button>
+                                </a>
+                                <button class="board-content-button" type="button" onclick="showEnlistModal()">选定应征
+                                </button>
+                            </div>
+                            <!--选择应征弹窗-->
+                            <div class="modal fade" id="enlistChoiceFileMModal" role="dialog"
+                                 aria-labelledby="exampleModalLabel"
+                                 aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title demand-tips-size" id="enlistChoiceTitle">选定画师</h5>
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body board-enlist-selected-style">
+                                            <div>
+                                                <span class="board-enlist-selected-color1">选定画师表示您希望与画师开始合作。</span>
+                                            </div>
+                                            <div class="margin-top-5px">
+                                                <span class="board-enlist-selected-color1">如您需要与同一位画师合作多张稿件，可在本次合作结束后再次选定画师。</span>
+                                            </div>
+                                            <div class="margin-top-30px">
+                                                <span class="board-enlist-selected-color2">画师</span>
+                                                <img class="margin-left-100px board-enlist-avatar-size img-circle"
+                                                     th:src="${enlist.user.avatarUrl}">
+                                                <span class="board-enlist-selected-word1"
+                                                      th:text="${enlist.user.name}"></span>
+                                            </div>
+                                            <div class="margin-top-30px">
+                                                <span class="board-enlist-selected-color2">需付稿酬</span>
+                                                <span class="board-enlist-selected-word2"
+                                                      th:text="${enlist.price}"></span>
+                                                <span class="margin-left-10px">RMB</span>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <input type="hidden" name="customerId" id="customerId"
+                                                   th:value="${session.user.id}">
+                                            <input type="hidden" name="demandId" id="demandId"
+                                                   th:value="${enlist.demandId}">
+                                            <input type="hidden" name="painterId" id="painterId"
+                                                   th:value="${enlist.userId}">
+                                            <input type="hidden" name="price" id="price"
+                                                   th:value="${enlist.price}">
+                                            <input type="hidden" name="enlistId" id="enlistId"
+                                                   th:value="${enlist.id}">
+                                            <input type="hidden" name="demandState" id="demandState"
+                                                   th:value="${enlist.demand.state}">
+                                            <button type="button" class="demand-enlist-selected-button"
+                                                    onclick="createOrder()">
+                                                确定
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--应征信息，正在进行-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:each="enlist : ${enlists}"
+                 th:if="${demand.state==1||demand.state==2}">
+                <div class="row board-enlist-style panel panel-default"
+                     th:if="${enlist.state==1 || enlist.state==2}">
+                    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 demand-enlist-avatar">
+                            <a th:href="@{'/users/'+${enlist.user.name}+'/demands'}">
+                                <img class="demand-enlist-avatar-size img-circle" th:src="${enlist.user.avatarUrl}">
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 demand-enlist-name-style">
+                            <span class="demand-enlist-name-size" th:text="${enlist.user.name}"></span>
+                            <br>
+                            <span class="text-desc"></span>
+                        </div>
+                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 margin-top-15px"
+                                 th:each="paintings : ${enlist.paintingsList}">
+                                <img class="demand-enlist-paintings-size img-rounded"
+                                     th:src="${paintings.paintingsUrl}">
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 board-content-style">
+                            <div class="board-content-word-title">应征留言：</div>
+                            <div class="board-content-word-content" th:text="${enlist.content}"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                        <div class="board-content-line"></div>
+                        <div class="board-content-right">
+                            <div class="margin-top-30px">
+                                <span class="text-desc">期望稿酬</span>
+                                <br>
+                                <span class="board-content-right-word" th:text="${enlist.price}"></span>
+                                <span class="board-content-right-size">RMB</span>
+                            </div>
+                            <div class="margin-top-5px">
+                                <span class="text-desc">预计完成日期</span>
+                                <br>
+                                <span class="board-content-right-word" th:text="${enlist.closingDate}"></span>
+                            </div>
+                            <div>
+                                <a  th:href="@{'/webSocketPrivate/'+${enlist.user.id}}"
+                                    target="_blank"
+                                    style="text-decoration:none;">
+                                    <button class="board-content-button" type="button">联系画师</button>
+                                </a>
+                            </div>
+
+                        </div>
+                        <div>
+                        </div>
+                    </div>
+                </div>
+                <!--收货区-->
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 panel panel-default"
+                     th:if="${enlist.state==1 || enlist.state==2}">
+                    <div class="margin-20px">
+                        <span>稿件收货区</span>
+                    </div>
+                    <hr class=" margin-top-0px">
+                    <div class="margin-10px" th:if="${demand.paintingsUrl==null}">
+                        <span class="demand-enlist-null">等待画师发货</span>
+                    </div>
+                    <div class="paintings-paintings-style" th:if="${demand.paintingsUrl!=null}">
+                        <img class="board-paintings" th:src="${demand.paintingsUrl}">
+                    </div>
+
+                </div>
+
+            </div>
+            <!--手动终止-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${demand.state==3}">
+                    <h1>该企划已手动终止</h1>
+                    <p>手动终止的企划不可继续操作呦~去发布一个新的企划吧~</p>
+                    <p><a class="btn btn-primary btn-lg" href="/index" role="button">回到主页</a></p>
+                    <p><a class="btn btn-primary btn-lg" href="/publish" role="button">立刻发布</a></p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div th:insert="footer :: foot"></div>
+
+
+</body>
+</html>

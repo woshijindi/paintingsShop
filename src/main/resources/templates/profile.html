@@ -1,0 +1,917 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${sectionName}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/css/paintingshop.css">
+    <script src="/js/paintingshop.js"></script>
+
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+<div th:insert="navigation :: nav"></div>
+
+<div class="container-fluid main profile">
+    <div class="row">
+        <!--左边导航-->
+        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+            <!--头像-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 panel panel-default">
+                <div class="media">
+                    <div class="center-block demand-avatar-width">
+                        <a th:href="@{'/users/'+${session.user.name}+'/demands'}">
+                            <img class="demand-avatar-size img-circle" th:src="${session.user.avatarUrl}">
+                        </a>
+                    </div>
+                    <div>
+                        <h4 class="demand-name-top text-center">
+                            <span th:text="${session.user.name}"></span>
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <!--个人描述-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 panel panel-default">
+                <div class="users-left">
+                    <h5 class="users-left-title">个人描述
+                        <a href="javascript:void(0);" onclick="showSignApply()">
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                        </a>
+                    </h5>
+                    <!--修改签名弹窗-->
+                    <div class="modal fade" id="signFileMModal" role="dialog" aria-labelledby="exampleModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title demand-tips-size" id="signFileTitle">修改个人描述</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <label for="content" class="col-form-label margin-top-15px">个人描述：</label>
+                                        <textarea class="form-control" rows="5" id="content"
+                                                  maxlength="50"
+                                                  placeholder="输入新的个人描述(最多50个字)"
+                                                  style="resize: none"></textarea>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="demand-enlist-selected-button"
+                                            id="createFileSureBut"
+                                            onclick="modifySign()">确定
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="users-left-content" th:text="${session.user.bio}"></span>
+                </div>
+            </div>
+            <!--导航栏-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 list-group section">
+                <a href="/profile/demands"
+                   th:class="${section=='demands'}?'active list-group-item':'list-group-item'">我发布的企划
+                    <span class="badge" th:text="${session.demandOngoing}"></span>
+                </a>
+                <a href="/profile/works"
+                   th:class="${section=='works'}?'active list-group-item':'list-group-item'">我发布的作品</a>
+                <a href="/profile/enlist"
+                   th:class="${section=='enlist'}?'active list-group-item':'list-group-item'"
+                   th:if="${session.user.identity==1}">我应征的企划
+                    <span class="badge" th:text="${session.enlistOngoing}"></span>
+                </a>
+                <a href="/profile/replies"
+                   th:class="${section=='replies'}?'active list-group-item':'list-group-item'">我收到的通知
+                    <span class="badge" th:text="${session.unReadCount}"></span>
+                </a>
+                <a href="/profile/myOrder"
+                   th:class="${section=='myOrder'}?'active list-group-item':'list-group-item'">我发起的订单</a>
+                <a href="/profile/enlistOrder"
+                   th:class="${section=='enlistOrder'}?'active list-group-item':'list-group-item'"
+                   th:if="${session.user.identity==1}">我应征的订单</a>
+                <a href="/profile/follow"
+                   th:class="${section=='follow'}?'active list-group-item':'list-group-item'">我关注的用户</a>
+            </div>
+        </div>
+        <!--我发布的企划-->
+        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 panel panel-default" th:if="${section == 'demands'}">
+            <h2><span th:text="${sectionName}"></span></h2>
+            <hr>
+            <div th:each="demand : ${pagination.demandDTOs}">
+
+                <div class="profile-demand-title">
+                    <a class="profile-demand-title-color" th:href="@{'/demand/'+${demand.id}}"
+                       th:text="${demand.title}"></a>
+                    <span class="label label-info" th:if="${demand.state==0}">该企划正在招募中</span>
+                    <span class="label label-danger" th:if="${demand.state==1}">该企划正在进行中</span>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 profile-demand-description-left">
+                        <div>
+                            <span class="text-desc">
+                                <span>截稿日期</span>
+                                <span class="margin-left-148px">应征人数</span>
+                                <span class="margin-left-148px">企划状态</span>
+                            </span>
+                        </div>
+
+                        <div class="row profile-demand-description-left-bottom">
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                <span th:text="${demand.closingDate}"></span>
+
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                <span th:text="${demand.enlistCount}"></span>个
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                <span th:if="${demand.state==0}">正在招募</span>
+                                <span th:if="${demand.state==1}">正在进行</span>
+                                <span th:if="${demand.state==2}">已经结束</span>
+                                <span th:if="${demand.state==3}">手动终止</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 margin-left--65px">
+                        <form action="/demandStop" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="demandId" id="demandId"
+                                   th:value="${demand.id}">
+                            <button class="profile-demand-description-button1" type="submit" th:if="${demand.state==0}">
+                                终止企划
+                            </button>
+
+                            <a th:if="${demand.state==1}" style="text-decoration:none;">
+                                <button class="profile-demand-description-button1-stop" type="button"
+                                        disabled="disabled">
+                                    正在进行
+                                </button>
+                            </a>
+                            <!--已经停止-->
+                            <a th:if="${demand.state==2 || demand.state==3}" style="text-decoration:none;">
+                                <button class="profile-demand-description-button1-stop" type="button"
+                                        disabled="disabled">
+                                    已经停止
+                                </button>
+                            </a>
+
+                            <a class="margin-left-20px" th:href="@{'/board/'+${demand.id}}"
+                               style="text-decoration:none;"
+                               th:if="${demand.state==0 || demand.state==1}">
+                                <button class="profile-demand-description-button2" type="button">进入工作板</button>
+                            </a>
+                            <!--已经停止-->
+                            <a class="margin-left-20px" style="text-decoration:none;"
+                               th:if="${demand.state==2 || demand.state==3}">
+                                <button class="profile-demand-description-button2-stop" type="button"
+                                        disabled="disabled">
+                                    进入工作板
+                                </button>
+                            </a>
+                        </form>
+                    </div>
+
+                </div>
+
+                <hr>
+            </div>
+            <!--分页-->
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li th:if="${pagination.showFirstPage}">
+                        <a th:href="@{'/profile/'+${section}(page=${1})}" aria-label="First">
+                            <span aria-hidden="true">&lt;&lt;</span>
+                        </a>
+                    </li>
+                    <li th:if="${pagination.showPrevious}">
+                        <a th:href="@{'/profile/'+${section}(page=${pagination.page - 1})}" aria-label="Previous">
+                            <span aria-hidden="true">&lt;</span>
+                        </a>
+                    </li>
+                    <li th:each="page : ${pagination.pages}" th:class="${pagination.page==page}?'active':''">
+                        <a th:href="@{'/profile/'+${section}(page=${page})}" th:text="${page}">
+                        </a>
+                    </li>
+                    <li th:if="${pagination.showNext}">
+                        <a th:href="@{'/profile/'+${section}(page=${pagination.page + 1})}" aria-label="Next">
+                            <span aria-hidden="true">&gt;</span>
+                        </a>
+                    </li>
+                    <li th:if="${pagination.showEndPage}">
+                        <a th:href="@{'/profile/'+${section}(page=${pagination.totalPage})}" aria-label="End">
+                            <span aria-hidden="true">&gt;&gt;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <!--我的作品-->
+        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 panel panel-default" th:if="${section == 'works'}">
+            <h2><span th:text="${sectionName}"></span></h2>
+            <hr>
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 panel panel-default profile-paintings-size"
+                 th:each="paintings : ${pagination.paintingsDTOs}">
+                <a th:href="@{'/paintings/'+${paintings.id}}">
+                    <img class="img-rounded profile-paintings" th:src="${paintings.paintingsUrl}">
+                    <form action="/paintingsDelete" method="post">
+                        <input type="hidden" name="id" id="id"
+                               th:value="${paintings.id}">
+                        <button type="submit">删除</button>
+                    </form>
+                </a>
+            </div>
+            <!--分页-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li th:if="${pagination.showFirstPage}">
+                            <a th:href="@{'/profile/'+${section}(page=${1})}" aria-label="First">
+                                <span aria-hidden="true">&lt;&lt;</span>
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showPrevious}">
+                            <a th:href="@{'/profile/'+${section}(page=${pagination.page - 1})}" aria-label="Previous">
+                                <span aria-hidden="true">&lt;</span>
+                            </a>
+                        </li>
+                        <li th:each="page : ${pagination.pages}" th:class="${pagination.page==page}?'active':''">
+                            <a th:href="@{'/profile/'+${section}(page=${page})}" th:text="${page}">
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showNext}">
+                            <a th:href="@{'/profile/'+${section}(page=${pagination.page + 1})}" aria-label="Next">
+                                <span aria-hidden="true">&gt;</span>
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showEndPage}">
+                            <a th:href="@{'/profile/'+${section}(page=${pagination.totalPage})}" aria-label="End">
+                                <span aria-hidden="true">&gt;&gt;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+        </div>
+        <!--我的应征-->
+        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 panel panel-default"
+             th:if="${section == 'enlist' && session.user.identity==1}">
+
+            <h2><span th:text="${sectionName}"></span></h2>
+            <hr>
+            <div th:each="enlist : ${pagination.enlistDTOs}">
+
+                <div class="profile-demand-title">
+                    <a class="profile-demand-title-color" th:href="@{'/demand/'+${enlist.demandId}}"
+                       th:text="${enlist.demand.title}"></a>
+                    <span class="label label-danger" th:if="${enlist.state == 1}">已经被选中，请尽快发货</span>
+                    <span class="label label-info" th:if="${enlist.state == 0}">等待企划方选择中...</span>
+
+
+                </div>
+                <div class="row">
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 profile-demand-description-left">
+                        <div>
+                            <span class="text-desc">
+                                <span>截稿日期</span>
+                                <span class="margin-left-98px">应征用于</span>
+                                <span class="margin-left-98px">企划规格</span>
+                            </span>
+                        </div>
+
+                        <div class="row profile-demand-description-left-bottom">
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <span th:text="${enlist.demand.closingDate}"></span>
+
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <span th:text="${enlist.demand.purpose}"></span>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <span th:text="${enlist.demand.specifications}"></span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 margin-left--65px">
+
+
+                        <form action="/enlistGiveUp" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="enlistId" id="enlistId"
+                                   th:value="${enlist.id}">
+                            <button class="profile-demand-description-button1" type="submit" th:if="${enlist.state==0}">
+                                放弃该企划
+                            </button>
+
+                            <a th:if="${enlist.state==1}" style="text-decoration:none;">
+                                <button class="profile-demand-description-button1-stop" type="button"
+                                        disabled="disabled">
+                                    不可放弃
+                                </button>
+                            </a>
+                            <a th:if="${enlist.state==2}" style="text-decoration:none;">
+                                <button class="profile-demand-description-button1-stop" type="button"
+                                        disabled="disabled">
+                                    已经完成
+                                </button>
+                            </a>
+                            <a th:if="${enlist.state==3}" style="text-decoration:none;">
+                                <button class="profile-demand-description-button1-stop" type="button"
+                                        disabled="disabled">
+                                    已经放弃
+                                </button>
+                            </a>
+
+                            <a class="margin-left-20px" th:href="@{'/painterBoard/'+${enlist.id}}"
+                               th:if="${enlist.state==1}">
+                                <button class="profile-demand-description-button2" type="button">进入工作板</button>
+                            </a>
+                            <a class="margin-left-20px"
+                               th:if="${enlist.state!=1}">
+                                <button class="profile-demand-description-button2-stop" type="button"
+                                        disabled="disabled">
+                                    进入工作板
+                                </button>
+                            </a>
+                        </form>
+                    </div>
+
+
+                </div>
+
+                <hr>
+            </div>
+            <!--分页-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li th:if="${pagination.showFirstPage}">
+                            <a th:href="@{'/profile/'+${section}(page=${1})}" aria-label="First">
+                                <span aria-hidden="true">&lt;&lt;</span>
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showPrevious}">
+                            <a th:href="@{'/profile/'+${section}(page=${pagination.page - 1})}" aria-label="Previous">
+                                <span aria-hidden="true">&lt;</span>
+                            </a>
+                        </li>
+                        <li th:each="page : ${pagination.pages}" th:class="${pagination.page==page}?'active':''">
+                            <a th:href="@{'/profile/'+${section}(page=${page})}" th:text="${page}">
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showNext}">
+                            <a th:href="@{'/profile/'+${section}(page=${pagination.page + 1})}" aria-label="Next">
+                                <span aria-hidden="true">&gt;</span>
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showEndPage}">
+                            <a th:href="@{'/profile/'+${section}(page=${pagination.totalPage})}" aria-label="End">
+                                <span aria-hidden="true">&gt;&gt;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <!--最新通知-->
+        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 panel panel-default" th:if="${section == 'replies'}">
+            <h2><span th:text="${sectionName}"></span></h2>
+            <hr>
+            <div class="margin-20px" th:each="notification : ${pagination.notificationDTOs}">
+                <h4>
+
+                    <!--有人应征或选定应征-->
+                    <a th:href="@{'/users/'+${notification.user.name}+'/demands'}"
+                       th:text="${notification.user.name}"
+                       th:if="${notification.type==0 || notification.type==1}"></a>
+
+                    <span th:text="${notification.typeMessage}"
+                          th:if="${notification.type==0 || notification.type==1}"></span>
+
+                    <a th:href="@{'/notification/' + ${notification.id}}"
+                       th:text="${notification.demand.title}"
+                       th:if="${notification.type==0 || notification.type==1}"></a>
+
+                    <span th:if="${notification.type==1}">下的应征，快去和TA交流吧~</span>
+
+
+                    <!--订单已发货-->
+                    <span th:if="${notification.type==2}">您的订单</span>
+                    <a th:href="@{'/notification/' + ${notification.id}}"
+                       th:text="${notification.demand.title}"
+                       th:if="${notification.type==2}"></a>
+                    <span th:text="${notification.typeMessage}"
+                          th:if="${notification.type==2}"></span>
+
+                    <!--聊天邀请-->
+                    <a th:href="@{'/users/'+${notification.user.name}+'/demands'}"
+                       th:text="${notification.user.name}"
+                       th:if="${notification.type==3}"></a>
+                    <span th:text="${notification.typeMessage}"
+                          th:if="${notification.type==3}"></span>
+                    <a th:href="@{'/notification/' + ${notification.id}}"
+                       target="_blank"
+                       th:if="${notification.type==3}">聊天室</a>
+
+                    <!--申请被驳回或成功-->
+                    <span th:text="${notification.typeMessage}"
+                          th:if="${notification.type==4 || notification.type==5}"></span>
+                    <a th:href="@{'/users/'+${notification.user.name}+'/demands'}"
+                       th:text="${notification.user.name}"
+                       th:if="${notification.type==4  || notification.type==5}"></a>
+
+
+                    <span class="label label-danger" th:if="${notification.state == 0}">未读</span>
+                    <span class="label label-info" th:if="${notification.state == 1}">已读</span>
+                    <span class="text-desc">时间:
+                    <span th:text="${#dates.format(notification.gmtCreate,'yyyy-MM-dd HH:mm')}"></span>
+                </span>
+                </h4>
+            </div>
+
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li th:if="${pagination.showFirstPage}">
+                        <a th:href="@{'/profile/'+${section}(page=${1})}" aria-label="First">
+                            <span aria-hidden="true">&lt;&lt;</span>
+                        </a>
+                    </li>
+                    <li th:if="${pagination.showPrevious}">
+                        <a th:href="@{'/profile/'+${section}(page=${pagination.page - 1})}" aria-label="Previous">
+                            <span aria-hidden="true">&lt;</span>
+                        </a>
+                    </li>
+                    <li th:each="page : ${pagination.pages}" th:class="${pagination.page==page}?'active':''">
+                        <a th:href="@{'/profile/'+${section}(page=${page})}" th:text="${page}">
+                        </a>
+                    </li>
+                    <li th:if="${pagination.showNext}">
+                        <a th:href="@{'/profile/'+${section}(page=${pagination.page + 1})}" aria-label="Next">
+                            <span aria-hidden="true">&gt;</span>
+                        </a>
+                    </li>
+                    <li th:if="${pagination.showEndPage}">
+                        <a th:href="@{'/profile/'+${section}(page=${pagination.totalPage})}" aria-label="End">
+                            <span aria-hidden="true">&gt;&gt;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <!--发起的订单-->
+        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 panel panel-default" th:if="${section == 'myOrder'}">
+            <h2><span th:text="${sectionName}"></span></h2>
+            <hr>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:each="order : ${pagination.orderDTOs}">
+                <div class="row order-size panel panel-default">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 order-title">
+                        <div class="margin-10px">
+                            <span class="margin-right-30px"
+                                  th:text="${#dates.format(order.gmtCreate,'yyyy-MM-dd')}"></span>
+                            订单号：<span th:text="${order.orderNumber}"></span>
+                            <span class="label label-danger" th:if="${order.state==0 && !order.overtime}">请尽快支付</span>
+                            <span class="label label-info" th:if="${order.state==0 && order.overtime}">订单超时，不可支付</span>
+                            <span class="label label-info" th:if="${order.state==1 && !order.overtime}">等待画师发货</span>
+                            <span class="label label-info"
+                                  th:if="${order.state==1 && order.overtime}">画师超时未发货，可以申请退款！</span>
+                            <span class="label label-danger" th:if="${order.state==2}">画师已发货，请前往工作板收货</span>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12  margin-10px">
+                        <div>
+                            <span class="text-desc">
+                                <span>企划标题</span>
+                                <span class="margin-left-148px">选定画师</span>
+                                <span class="margin-left-148px">交稿时间</span>
+                                <span class="margin-left-148px">订单状态</span>
+                            </span>
+                        </div>
+                        <div class="row profile-demand-description-left-bottom margin-top-5px">
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a th:href="@{'/demand/'+${order.demandId}}" style="text-decoration:none;">
+                                    <span class="order-word-size" th:text="${order.demand.title}"></span>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a th:href="@{'/users/'+${order.user.name}+'/demands'}" style="text-decoration:none;">
+                                    <span class="order-word-size" th:text="${order.user.name}"></span>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <span class="order-word-size" th:text="${order.enlist.closingDate}"></span>
+                            </div>
+
+                            <!--状态-->
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <span class="order-word-size-state0"
+                                      th:if="${order.state==0 && !order.overtime}">待支付</span>
+                                <span class="order-word-size-state0"
+                                      th:if="${order.state==0 && order.overtime}">订单超时</span>
+                                <span class="order-word-size-state12" th:if="${order.state==1}">待发货</span>
+                                <span class="order-word-size-state12" th:if="${order.state==2}">待收货</span>
+                                <span class="order-word-size-state12" th:if="${order.state==3}">待评价</span>
+                                <span class="order-word-size-state34" th:if="${order.state==4}">已完成</span>
+                                <span class="order-word-size-state34" th:if="${order.state==5}">已取消</span>
+                            </div>
+
+
+                        </div>
+                        <hr class="order-hr">
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 margin-top--10px">
+                        <div class="order-left margin-left-10px">
+                            <span class="text-desc">稿酬:</span>
+                            <span class="board-content-right-word margin-left-10px" th:text="${order.price}"></span>
+                            <span class="board-content-right-size">RMB</span>
+                        </div>
+
+                        <!--待支付-->
+                        <div class="order-right row" th:if="${order.state==0}">
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <form action="/payCancel" method="post">
+                                    <input type="hidden" name="demandId" th:value="${order.demandId}">
+                                    <input type="hidden" name="orderNumber" th:value="${order.orderNumber}">
+                                    <input type="hidden" name="enlistId" th:value="${order.enlist.id}">
+                                    <button type="submit" class="order-pay-button">
+                                        取消订单
+                                    </button>
+                                </form>
+                            </div>
+                            <!--前往支付-->
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" th:if="${!order.overtime}">
+                                <form action="/pay" method="post">
+                                    <input type="hidden" name="demandId" th:value="${order.demandId}">
+                                    <input type="hidden" name="orderNumber" th:value="${order.orderNumber}">
+                                    <input type="hidden" name="price" th:value="${order.price}">
+                                    <button type="submit" class="order-pay-button">
+                                        前往支付
+                                    </button>
+                                </form>
+                            </div>
+                            <!--超时，不可支付-->
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" th:if="${order.overtime}">
+                                <button type="button" class="order-pay-button-disabled" disabled="disabled">
+                                    订单超时
+                                </button>
+                            </div>
+                        </div>
+                        <!--待发货-->
+                        <div class="order-right" th:if="${order.state==1}">
+                            <!--画师超时-->
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" th:if="${order.overtime}">
+                                <form action="/orderReturn" method="post">
+                                    <input type="hidden" name="demandId" th:value="${order.demandId}">
+                                    <input type="hidden" name="orderNumber" th:value="${order.orderNumber}">
+                                    <input type="hidden" name="enlistId" th:value="${order.enlist.id}">
+                                    <button type="submit" class="order-pay-button">
+                                        申请退款
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <button type="button" class="order-pay-button-disabled" disabled="disabled">
+                                    等待发货
+                                </button>
+                            </div>
+                        </div>
+                        <!--待收货-->
+                        <div class="order-right" th:if="${order.state==2}">
+                            <form action="/orderPaying" method="post">
+                                <input type="hidden" name="demandId" th:value="${order.demandId}">
+                                <input type="hidden" name="orderNumber" th:value="${order.orderNumber}">
+                                <input type="hidden" name="enlistId" th:value="${order.enlist.id}">
+                                <button type="submit" class="order-pay-button">
+                                    确认收货
+                                </button>
+                            </form>
+                        </div>
+                        <!--待评价-->
+                        <div class="order-right" th:if="${order.state==3}">
+
+                            <!--评价弹窗-->
+                            <div class="modal fade" id="evaluateFileMModal" role="dialog"
+                                 aria-labelledby="exampleModalLabel"
+                                 aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title demand-tips-size" id="evaluateFileTitle">订单评价</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form>
+                                                <input type="hidden" id="receiver" th:value="${order.user.id}">
+                                                <input type="hidden" id="receiverType" th:value="1">
+                                                <input type="hidden" id="orderId" th:value="${order.id}">
+
+                                                <label for="content" class="col-form-label margin-top-15px">评价：</label>
+                                                <textarea class="form-control" rows="5" id="content"
+                                                          maxlength="75"
+                                                          placeholder="评价一下本次交易吧~(最多75个字)"
+                                                          style="resize: none"></textarea>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="demand-enlist-selected-button"
+                                                    id="createFileSureBut"
+                                                    onclick="orderEvaluate()">确定
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="button" class="order-pay-button" onclick="showEvaluateModal()">
+                                评价
+                            </button>
+
+                        </div>
+                        <!--已完成-->
+                        <div class="order-right order-evaluate" th:if="${order.state==4}">
+                            <span class="text-desc">我的评价:</span>
+                            <span th:text="${order.evaluate.content}"></span>
+                        </div>
+                        <!--已取消-->
+                        <div class="order-right" th:if="${order.state==5}">
+                            <button type="button" class="order-pay-button-disabled" disabled="disabled">
+                                已取消
+                            </button>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li th:if="${pagination.showFirstPage}">
+                        <a th:href="@{'/profile/'+${section}(page=${1})}" aria-label="First">
+                            <span aria-hidden="true">&lt;&lt;</span>
+                        </a>
+                    </li>
+                    <li th:if="${pagination.showPrevious}">
+                        <a th:href="@{'/profile/'+${section}(page=${pagination.page - 1})}" aria-label="Previous">
+                            <span aria-hidden="true">&lt;</span>
+                        </a>
+                    </li>
+                    <li th:each="page : ${pagination.pages}" th:class="${pagination.page==page}?'active':''">
+                        <a th:href="@{'/profile/'+${section}(page=${page})}" th:text="${page}">
+                        </a>
+                    </li>
+                    <li th:if="${pagination.showNext}">
+                        <a th:href="@{'/profile/'+${section}(page=${pagination.page + 1})}" aria-label="Next">
+                            <span aria-hidden="true">&gt;</span>
+                        </a>
+                    </li>
+                    <li th:if="${pagination.showEndPage}">
+                        <a th:href="@{'/profile/'+${section}(page=${pagination.totalPage})}" aria-label="End">
+                            <span aria-hidden="true">&gt;&gt;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <!--应征的订单-->
+        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 panel panel-default"
+             th:if="${section == 'enlistOrder' && session.user.identity==1}">
+            <h2><span th:text="${sectionName}"></span></h2>
+            <hr>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:each="order : ${pagination.orderDTOs}">
+                <div class="row order-size panel panel-default">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 order-title">
+                        <div class="margin-10px">
+                            <span class="margin-right-30px"
+                                  th:text="${#dates.format(order.gmtCreate,'yyyy-MM-dd')}"></span>
+                            订单号：<span th:text="${order.orderNumber}"></span>
+                            <span class="label label-info" th:if="${order.state==0 && !order.overtime}">等待企划方付款</span>
+                            <span class="label label-info" th:if="${order.state==0 && order.overtime}">付款超时，订单已取消</span>
+                            <span class="label label-danger" th:if="${order.state==1}">企划方已付款，请尽快处理</span>
+                            <span class="label label-info" th:if="${order.state==2}">等待企划方确认收货</span>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12  margin-10px">
+                        <div>
+                            <span class="text-desc">
+                                <span>企划标题</span>
+                                <span class="margin-left-148px">企划方</span>
+                                <span class="margin-left-160px">交稿时间</span>
+                                <span class="margin-left-148px">订单状态</span>
+                            </span>
+                        </div>
+                        <div class="row profile-demand-description-left-bottom margin-top-5px">
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a th:href="@{'/demand/'+${order.demandId}}" style="text-decoration:none;">
+                                    <span class="order-word-size" th:text="${order.demand.title}"></span>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a th:href="@{'/users/'+${order.user.name}+'/demands'}" style="text-decoration:none;">
+                                    <span class="order-word-size" th:text="${order.user.name}"></span>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <span class="order-word-size" th:text="${order.enlist.closingDate}"></span>
+                            </div>
+                            <!--状态-->
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <span class="order-word-size-state0"
+                                      th:if="${order.state==0 && !order.overtime}">待支付</span>
+                                <span class="order-word-size-state0"
+                                      th:if="${order.state==0 && order.overtime}">订单超时</span>
+                                <span class="order-word-size-state12" th:if="${order.state==1}">待发货（对方已付款）</span>
+                                <span class="order-word-size-state12" th:if="${order.state==2}">待收货</span>
+                                <span class="order-word-size-state12" th:if="${order.state==3}">待评价</span>
+                                <span class="order-word-size-state34" th:if="${order.state==4}">已完成</span>
+                                <span class="order-word-size-state34" th:if="${order.state==5}">已取消</span>
+                            </div>
+                        </div>
+                        <hr class="order-hr">
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 margin-top--10px">
+                        <div class="order-left margin-left-10px">
+                            <span class="text-desc">稿酬:</span>
+                            <span class="board-content-right-word margin-left-10px" th:text="${order.price}"></span>
+                            <span class="board-content-right-size">RMB</span>
+                        </div>
+                        <!--待支付-->
+                        <div class="order-right" th:if="${order.state==0 && !order.overtime}">
+                            <button type="button" class="order-pay-button-disabled" disabled="disabled">
+                                等待支付
+                            </button>
+                        </div>
+                        <!--订单超时-->
+                        <div class="order-right" th:if="${order.state==0 && order.overtime}">
+                            <button type="button" class="order-pay-button-disabled" disabled="disabled">
+                                订单超时
+                            </button>
+                        </div>
+                        <!--待发货-->
+                        <div class="order-right" th:if="${order.state==1}">
+                            <a th:href="@{'/painterBoard/'+${order.enlist.id}}">
+                                <button type="button" class="order-pay-button">
+                                    马上发货
+                                </button>
+                            </a>
+                        </div>
+                        <!--待收货-->
+                        <div class="order-right" th:if="${order.state==2}">
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" th:if="${order.overtime}">
+                                <form action="/orderPayingPainter" method="post">
+                                    <input type="hidden" name="demandId" th:value="${order.demandId}">
+                                    <input type="hidden" name="orderNumber" th:value="${order.orderNumber}">
+                                    <input type="hidden" name="enlistId" th:value="${order.enlist.id}">
+                                    <button type="submit" class="order-pay-button">
+                                        平台介入
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <button type="button" class="order-pay-button-disabled" disabled="disabled">
+                                    等待收货
+                                </button>
+                            </div>
+                        </div>
+                        <!--待评价-->
+                        <div class="order-right" th:if="${order.state==3}">
+                            <button type="button" class="order-pay-button-disabled" disabled="disabled">
+                                待评价
+                            </button>
+                        </div>
+                        <!--已完成-->
+                        <div class="order-right order-evaluate" th:if="${order.state==4}">
+                            <span class="text-desc">企划方评价:</span>
+                            <span th:text="${order.evaluate.content}"></span>
+                        </div>
+                        <!--已取消-->
+                        <div class="order-right" th:if="${order.state==5}">
+                            <button type="button" class="order-pay-button-disabled" disabled="disabled">
+                                已取消
+                            </button>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li th:if="${pagination.showFirstPage}">
+                        <a th:href="@{'/profile/'+${section}(page=${1})}" aria-label="First">
+                            <span aria-hidden="true">&lt;&lt;</span>
+                        </a>
+                    </li>
+                    <li th:if="${pagination.showPrevious}">
+                        <a th:href="@{'/profile/'+${section}(page=${pagination.page - 1})}" aria-label="Previous">
+                            <span aria-hidden="true">&lt;</span>
+                        </a>
+                    </li>
+                    <li th:each="page : ${pagination.pages}" th:class="${pagination.page==page}?'active':''">
+                        <a th:href="@{'/profile/'+${section}(page=${page})}" th:text="${page}">
+                        </a>
+                    </li>
+                    <li th:if="${pagination.showNext}">
+                        <a th:href="@{'/profile/'+${section}(page=${pagination.page + 1})}" aria-label="Next">
+                            <span aria-hidden="true">&gt;</span>
+                        </a>
+                    </li>
+                    <li th:if="${pagination.showEndPage}">
+                        <a th:href="@{'/profile/'+${section}(page=${pagination.totalPage})}" aria-label="End">
+                            <span aria-hidden="true">&gt;&gt;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <!--关注的用户-->
+        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 panel panel-default" th:if="${section == 'follow'}">
+            <h2><span th:text="${sectionName}"></span></h2>
+            <hr>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:each="user : ${pagination.userDTOs}">
+                <div class="row painterSquare-user-style panel panel-default">
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 demand-enlist-avatar">
+                        <a th:href="@{'/users/'+${user.name}+'/demands'}">
+                            <img class="demand-enlist-avatar-size img-circle" th:src="${user.avatarUrl}">
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 demand-enlist-name-style">
+                        <a th:href="@{'/users/'+${user.name}+'/demands'}">
+                            <span class="demand-enlist-name-size" th:text="${user.name}"></span>
+                            <span class="label label-info" th:if="${user.identity==1}">画师</span>
+                        </a>
+                        <br>
+                        <span class="text-desc"></span>
+                    </div>
+                    <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 margin-top-15px"
+                             th:each="paintings : ${user.paintingsList}">
+                            <a th:href="@{'/paintings/'+${paintings.id}}">
+                                <img class="demand-enlist-paintings-size img-rounded"
+                                     th:src="${paintings.paintingsUrl}">
+                            </a>
+                        </div>
+                        <div class="profile-follow-no-paintings" th:if="${user.paintingsList.size()==0}">这个用户还没有发布过作品
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li th:if="${pagination.showFirstPage}">
+                            <a th:href="@{'/profile/'+${section}(page=${1})}" aria-label="First">
+                                <span aria-hidden="true">&lt;&lt;</span>
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showPrevious}">
+                            <a th:href="@{'/profile/'+${section}(page=${pagination.page - 1})}" aria-label="Previous">
+                                <span aria-hidden="true">&lt;</span>
+                            </a>
+                        </li>
+                        <li th:each="page : ${pagination.pages}" th:class="${pagination.page==page}?'active':''">
+                            <a th:href="@{'/profile/'+${section}(page=${page})}" th:text="${page}">
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showNext}">
+                            <a th:href="@{'/profile/'+${section}(page=${pagination.page + 1})}" aria-label="Next">
+                                <span aria-hidden="true">&gt;</span>
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showEndPage}">
+                            <a th:href="@{'/profile/'+${section}(page=${pagination.totalPage})}" aria-label="End">
+                                <span aria-hidden="true">&gt;&gt;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div th:insert="footer :: foot"></div>
+
+
+</body>
+</html>

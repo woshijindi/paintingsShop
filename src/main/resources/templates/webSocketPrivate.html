@@ -1,0 +1,163 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${toUser.name}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/css/paintingshop.css">
+    <link rel="stylesheet" href="/css/editormd.preview.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-select.min.css">
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/moment.js"></script>
+    <script src="/js/paintingshop.js"></script>
+    <script src="/js/editormd.min.js" type="application/javascript"></script>
+    <script src="/js/lib/marked.min.js"></script>
+    <script src="/js/lib/prettify.min.js"></script>
+    <script src="/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="/js/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script src="/js/bootstrap-select.min.js"></script>
+    <script src="/js/defaults-zh_CN.min.js"></script>
+    <script src="/js/defaults-zh_CN.min.js"></script>
+
+    <style>
+        #message {
+            border: 1px solid gray;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body onload="load();">
+<div class="webSocketPublic-title">
+    <span>与 </span>
+    <span th:text="${toUser.name}"></span>
+    <span> 的聊天室</span>
+
+</div>
+
+
+<div id="max">
+
+    <div class="pre-scrollable webSocketPublic-size" id="message"></div>
+
+    <input type="hidden" name="nickId" id="nickId" th:value="${user.id}">
+    <input type="hidden" name="toUser" id="toUser" th:value="${toUser.id}">
+
+    <div class="row">
+
+        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+            <textarea id="text" name="text"
+                      class="form-control comment webSocketPublic-input"
+                      rows="6"
+                      style="resize: none"
+                      placeholder="请输入聊天消息，点击右边的发送按钮发送"></textarea>
+        </div>
+
+        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5 webSocketPublic-private-right">
+            <button class="board-content-button" onclick="send()">发送消息</button>
+
+            <button class="board-content-button-webSocket margin-left-40px" onclick="invitation()">发送邀请</button>
+        </div>
+    </div>
+
+</div>
+
+
+</body>
+<script type="text/javascript">
+    var websocket = null;
+
+    window.onload = function conectWebSocket() {
+        var nickId = document.getElementById("nickId").value;
+
+        //判断当前浏览器是否支持WebSocket
+        if ('WebSocket' in window) {
+            websocket = new WebSocket("ws://localhost:8080/websocket/" + nickId);
+        } else {
+            alert('系统消息: 您的浏览器不支持在线聊天')
+        }
+        //连接发生错误的回调方法
+        websocket.onerror = function () {
+            setMessageInnerHTML("系统消息:出现未知错误");
+        };
+        //连接成功建立的回调方法
+        websocket.onopen = function (event) {
+            setMessageInnerHTML("系统消息: 成功连接到聊天室");
+        }
+        //接收到消息的回调方法
+        websocket.onmessage = function (event) {
+            setMessageInnerHTML(event.data);
+            //将滚动条定位在底部
+            document.getElementById('message').scrollTop = document.getElementById('message').scrollHeight;
+
+        }
+        //连接关闭的回调方法
+        websocket.onclose = function () {
+            setMessageInnerHTML("系统消息:关闭连接");
+        }
+        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+        window.onbeforeunload = function () {
+            websocket.close();
+        }
+    }
+
+    //将消息显示在网页上
+    function setMessageInnerHTML(innerHTML) {
+        document.getElementById('message').innerHTML += innerHTML + '<br/>';
+    }
+
+    //关闭连接
+    function closeWebSocket() {
+        websocket.close();
+    }
+
+    //发送消息
+    function send() {
+        var message = document.getElementById('text').value;
+
+        var toUser = document.getElementById('toUser').value;
+        var socketMsg = {msg: message, toUser: toUser};
+
+        if (message == "") {
+            return;
+        }
+        //单聊.
+        socketMsg.type = 1;
+
+        websocket.send(JSON.stringify(socketMsg));
+        document.getElementById("text").value = "";
+    }
+
+
+    function invitation() {
+
+        var nickId = $("#nickId").val();
+        var toUser = $("#toUser").val();
+
+        $.ajax({
+            type: "POST",
+            url: "/invitation",
+            contentType: 'application/json',
+            data: JSON.stringify({
+                "notifier": nickId,
+                "receiver": toUser,
+            }),
+            success: function (response) {
+                if (response.code == 200) {
+                    window.location.reload();
+                    confirm("成功向TA发送邀请，请等待");
+                } else {
+                    alert(response.message);
+                }
+
+                console.log(response);
+            },
+            dataType: "json"
+        })
+
+    }
+
+</script>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>作品广场 - 画商店</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/css/paintingshop.css">
+    <script src="/js/paintingshop.js"></script>
+
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+<div th:insert="navigation :: nav"></div>
+
+
+<div class="container-fluid main">
+    <div class="row">
+
+        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 panel panel-default paintingsSquare-left-padding">
+
+            <div class="paintingsSquare-left-title">作品类别</div>
+            <div>
+                <a style="text-decoration:none;" href="/paintingsSquare/type/0/场景">
+                    <span class="label label-info paintingsSquare-left-tag">场景</span>
+                </a>
+                <a style="text-decoration:none;" href="/paintingsSquare/type/0/Q版">
+                    <span class="label label-info paintingsSquare-left-tag">Q版</span>
+                </a>
+                <a style="text-decoration:none;" href="/paintingsSquare/type/0/插画">
+                    <span class="label label-info paintingsSquare-left-tag">插画</span>
+                </a>
+                <a style="text-decoration:none;" href="/paintingsSquare/type/0/角色">
+                    <span class="label label-info paintingsSquare-left-tag">角色</span>
+                </a>
+                <a style="text-decoration:none;" href="/paintingsSquare/type/0/其他">
+                    <span class="label label-info paintingsSquare-left-tag">其他</span>
+                </a>
+            </div>
+            <hr>
+
+            <div class="paintingsSquare-left-title">作品风格</div>
+            <div>
+                <a style="text-decoration:none;" href="/paintingsSquare/style/1/古风">
+                    <span class="label label-info paintingsSquare-left-tag">古风</span>
+                </a>
+                <a style="text-decoration:none;" href="/paintingsSquare/style/1/欧美">
+                    <span class="label label-info paintingsSquare-left-tag">欧美</span>
+                </a>
+                <a style="text-decoration:none;" href="/paintingsSquare/style/1/日系">
+                    <span class="label label-info paintingsSquare-left-tag">日系</span>
+                </a>
+                <a style="text-decoration:none;" href="/paintingsSquare/style/1/其他">
+                    <span class="label label-info paintingsSquare-left-tag">其他</span>
+                </a>
+            </div>
+
+            <hr>
+
+            <div class="paintingsSquare-left-title">作品画法</div>
+            <div>
+                <a style="text-decoration:none;" href="/paintingsSquare/method/2/厚涂">
+                    <span class="label label-info paintingsSquare-left-tag">厚涂</span>
+                </a>
+                <a style="text-decoration:none;" href="/paintingsSquare/method/2/水彩">
+                    <span class="label label-info paintingsSquare-left-tag">水彩</span>
+                </a>
+                <a style="text-decoration:none;" href="/paintingsSquare/method/2/写实">
+                    <span class="label label-info paintingsSquare-left-tag">写实</span>
+                </a>
+                <a style="text-decoration:none;" href="/paintingsSquare/method/2/赛璐璐">
+                    <span class="label label-info paintingsSquare-left-tag">赛璐璐</span>
+                </a>
+                <a style="text-decoration:none;" href="/paintingsSquare/method/2/其他">
+                    <span class="label label-info paintingsSquare-left-tag">其他</span>
+                </a>
+            </div>
+
+
+        </div>
+
+        <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 panel panel-default">
+            <h2 th:if="${lookUp==10}">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>发现神作
+            </h2>
+            <h2 th:if="${lookUp!=10}">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>当前搜索关键字—
+                <span th:text="${message}"></span>
+            </h2>
+            <hr >
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 panel panel-default paintingsSquare-size"
+                 th:each="paintings : ${pagination.paintingsDTOs}">
+                <a th:href="@{'/paintings/'+${paintings.id}}">
+                    <img class="img-rounded paintingsSquare-paintings" th:src="${paintings.paintingsUrl}">
+                </a>
+            </div>
+            <!--所有分页-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${lookUp==10}">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li th:if="${pagination.showFirstPage}">
+                            <a href="/paintngsSquare?page=1" aria-label="First">
+                                <span aria-hidden="true">&lt;&lt;</span>
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showPrevious}">
+                            <a th:href="@{/paintingsSquare(page=${pagination.page - 1})}" aria-label="Previous">
+                                <span aria-hidden="true">&lt;</span>
+                            </a>
+                        </li>
+                        <li th:each="page : ${pagination.pages}" th:class="${pagination.page==page}?'active':''">
+                            <a th:href="@{/paintingsSquare(page=${page})}" th:text="${page}">
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showNext}">
+                            <a th:href="@{/paintingsSquare(page=${pagination.page + 1})}" aria-label="Next">
+                                <span aria-hidden="true">&gt;</span>
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showEndPage}">
+                            <a th:href="@{/paintingsSquare(page=${pagination.totalPage})}" aria-label="End">
+                                <span aria-hidden="true">&gt;&gt;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+
+            <!--按类别分页-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${lookUp==0}">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li th:if="${pagination.showFirstPage}">
+                            <a th:href="@{'/paintingsSquare/type/'+${id}+'/'+${message}(page=1)}" aria-label="First">
+                                <span aria-hidden="true">&lt;&lt;</span>
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showPrevious}">
+                            <a th:href="@{'/paintingsSquare/type/'+${id}+'/'+${message}(page=${pagination.page - 1})}"
+                               aria-label="Previous">
+                                <span aria-hidden="true">&lt;</span>
+                            </a>
+                        </li>
+                        <li th:each="page : ${pagination.pages}" th:class="${pagination.page==page}?'active':''">
+                            <a th:href="@{'/paintingsSquare/type/'+${id}+'/'+${message}(page=${page})}"
+                               th:text="${page}">
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showNext}">
+                            <a th:href="@{'/paintingsSquare/type/'+${id}+'/'+${message}(page=${pagination.page + 1})}"
+                               aria-label="Next">
+                                <span aria-hidden="true">&gt;</span>
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showEndPage}">
+                            <a th:href="@{'/paintingsSquare/type/'+${id}+'/'+${message}(page=${pagination.totalPage})}"
+                               aria-label="End">
+                                <span aria-hidden="true">&gt;&gt;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+
+            <!--按风格分页-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${lookUp==1}">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li th:if="${pagination.showFirstPage}">
+                            <a th:href="@{'/paintingsSquare/style/'+${id}+'/'+${message}(page=1)}" aria-label="First">
+                                <span aria-hidden="true">&lt;&lt;</span>
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showPrevious}">
+                            <a th:href="@{'/paintingsSquare/style/'+${id}+'/'+${message}(page=${pagination.page - 1})}"
+                               aria-label="Previous">
+                                <span aria-hidden="true">&lt;</span>
+                            </a>
+                        </li>
+                        <li th:each="page : ${pagination.pages}" th:class="${pagination.page==page}?'active':''">
+                            <a th:href="@{'/paintingsSquare/style/'+${id}+'/'+${message}(page=${page})}"
+                               th:text="${page}">
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showNext}">
+                            <a th:href="@{'/paintingsSquare/style/'+${id}+'/'+${message}(page=${pagination.page + 1})}"
+                               aria-label="Next">
+                                <span aria-hidden="true">&gt;</span>
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showEndPage}">
+                            <a th:href="@{'/paintingsSquare/style/'+${id}+'/'+${message}(page=${pagination.totalPage})}"
+                               aria-label="End">
+                                <span aria-hidden="true">&gt;&gt;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+
+            <!--按画法分页-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${lookUp==2}">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li th:if="${pagination.showFirstPage}">
+                            <a th:href="@{'/paintingsSquare/method/'+${id}+'/'+${message}(page=1)}" aria-label="First">
+                                <span aria-hidden="true">&lt;&lt;</span>
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showPrevious}">
+                            <a th:href="@{'/paintingsSquare/method/'+${id}+'/'+${message}(page=${pagination.page - 1})}"
+                               aria-label="Previous">
+                                <span aria-hidden="true">&lt;</span>
+                            </a>
+                        </li>
+                        <li th:each="page : ${pagination.pages}" th:class="${pagination.page==page}?'active':''">
+                            <a th:href="@{'/paintingsSquare/method/'+${id}+'/'+${message}(page=${page})}"
+                               th:text="${page}">
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showNext}">
+                            <a th:href="@{'/paintingsSquare/method/'+${id}+'/'+${message}(page=${pagination.page + 1})}"
+                               aria-label="Next">
+                                <span aria-hidden="true">&gt;</span>
+                            </a>
+                        </li>
+                        <li th:if="${pagination.showEndPage}">
+                            <a th:href="@{'/paintingsSquare/method/'+${id}+'/'+${message}(page=${pagination.totalPage})}"
+                               aria-label="End">
+                                <span aria-hidden="true">&gt;&gt;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+
+        </div>
+
+
+    </div>
+</div>
+
+<div th:insert="footer :: foot"></div>
+
+
+</body>
+</html>

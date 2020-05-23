@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<div th:fragment="nav">
+    <nav class="navbar navbar-default index-navigation">
+        <div class="container-fluid margin-left-5px">
+            <div class="navbar-header index-navigation-center">
+                <a class="navbar-brand index-logo" href="/index">约稿平台</a>
+            </div>
+
+            <div class="collapse navbar-collapse index-navigation-center" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-left">
+                    <!--登陆状态-->
+                    <li th:if="${session.user != null}">
+                        <a href="/profile/demands" class="navigation-title-size">首页</a>
+                    </li>
+                    <li th:if="${session.user != null}">
+                        <a href="/painterSquare" class="navigation-title-size">画师</a>
+                    </li>
+                    <li th:if="${session.user != null}">
+                        <a href="/demandSquare" class="navigation-title-size">企划</a>
+                    </li>
+                    <li th:if="${session.user != null}">
+                        <a href="/paintingsSquare" class="navigation-title-size">作品</a>
+                    </li>
+
+                    <!--未登陆状态-->
+                    <li th:if="${session.user == null}">
+                        <a href="/painterSquare" class="navigation-title-size">画师</a>
+                    </li>
+                    <li th:if="${session.user == null}">
+                        <a href="/demandSquare" class="navigation-title-size">企划</a>
+                    </li>
+                    <li th:if="${session.user == null}">
+                        <a href="/paintingsSquare" class="navigation-title-size">作品</a>
+                    </li>
+
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li th:if="${session.user != null && session.user.identity == 2}">
+                        <a href="/backStage/usersController">后台管理</a>
+                    </li>
+                    <li th:if="${session.user != null && session.user.identity != 1 &&session.user.identity !=2}">
+                        <!--画师申请弹框-->
+                        <div class="modal fade" id="painterFileMModal" role="dialog"
+                             aria-labelledby="exampleModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title demand-tips-size" id="painterFileTitle">申请成为画师</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body board-enlist-selected-style">
+                                        <div>
+                                            <span class="board-enlist-selected-color1">申请成为画商店的画师，您需要满足以下条件。</span>
+                                        </div>
+                                        <div class="margin-top-5px">
+                                            <span class="board-enlist-selected-color1">1、发布过至少三幅作品</span>
+                                            <br>
+                                            <span class="board-enlist-selected-color1">2、已经绑定支付宝账号</span>
+                                        </div>
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="demand-enlist-selected-button"
+                                                id="createFileSureBut" onclick="apply()">提交申请
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <a href="javascript:void(0);" onclick="showPainterApply()">申请成为画师</a>
+                    </li>
+                    <li th:if="${session.user != null}">
+                        <a href="/drawUpload">发布作品</a>
+                    </li>
+                    <li th:if="${session.user != null}">
+                        <a href="/publish">
+                            <button class="navigation-publish_button" type="button">发布企划</button>
+                        </a>
+                    </li>
+                    <li th:if="${session.user != null}">
+                        <a href="/profile/replies" th:if="${session.unReadCount==0}">通知
+                            <span class="badge" th:text="${session.unReadCount}"></span>
+                        </a>
+                        <a href="/profile/replies" th:if="${session.unReadCount!=0}">通知
+                            <span class="badge-danger" th:text="${session.unReadCount}"></span>
+                        </a>
+                    </li>
+                    <li th:if="${session.user != null}">
+                        <img class="navigation-avator-size img-circle" th:src="${session.user.avatarUrl}">
+                    </li>
+
+
+                    <li th:unless="${session.user != null}">
+                        <a href="/login">登录</a>
+                    </li>
+                    <li th:unless="${session.user != null}">
+                        <a href="/register">注册</a>
+                    </li>
+                    <li class="dropdown" th:if="${session.user != null}">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                           aria-haspopup="true" aria-expanded="false">
+                            <span th:text="${session.user.getName()}"></span>
+                            <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/profile/demands">我发布的企划</a></li>
+                            <li><a href="/settings">设置</a></li>
+                            <li><a href="/logout">退出登录</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>
+
+</body>
+
+</html>

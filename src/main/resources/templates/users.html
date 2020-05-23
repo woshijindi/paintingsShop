@@ -1,0 +1,241 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/css/paintingshop.css">
+    <link rel="stylesheet" href="/css/editormd.preview.min.css">
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/moment.js"></script>
+    <script src="/js/paintingshop.js"></script>
+    <script src="/js/editormd.min.js" type="application/javascript"></script>
+    <script src="/js/lib/marked.min.js"></script>
+    <script src="/js/lib/prettify.min.js"></script>
+
+</head>
+
+<body>
+<div th:insert="navigation :: nav"></div>
+
+<div class="container-fluid main profile">
+    <div class="row">
+
+
+        <!--用户-->
+        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 panel panel-default">
+
+                <div class="center-block demand-avatar-width">
+                    <img class="demand-avatar-size img-circle" th:src="${user.avatarUrl}">
+                </div>
+                <div>
+                    <h4 class="demand-name-top text-center">
+                        <span th:text="${user.name}"></span>
+                    </h4>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                        <a  th:href="@{'/webSocketPrivate/'+${user.id}}"
+                            target="_blank"
+                            style="text-decoration:none;">
+                            <button class="users-left-button1" type="button">和他聊聊</button>
+                        </a>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" th:if="${isFollow==0}">
+                        <input type="hidden" name="heroineId" id="heroineId"
+                               th:value="${user.id}">
+                        <button class="users-left-button2" type="button" onclick="follow()">关注
+                        </button>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" th:if="${isFollow==1}">
+                        <input type="hidden" name="heroineId" id="heroineId"
+                               th:value="${user.id}">
+                        <button class="users-left-button3" type="button" onclick="unFollow()">取消关注
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 panel panel-default">
+                <div class="users-left">
+                    <h5 class="users-left-title">个人描述</h5>
+                    <span class="users-left-content" th:text="${user.bio}"></span>
+                </div>
+            </div>
+
+            <!--导航栏-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 list-group section">
+                <a th:href="@{'/users/'+${user.name}+'/demands'}"
+                   th:class="${section=='demands'}?'active list-group-item':'list-group-item'">TA发布的企划</a>
+                <a th:href="@{'/users/'+${user.name}+'/paintings'}"
+                   th:class="${section=='paintings'}?'active list-group-item':'list-group-item'"
+                   th:if="${user.getIdentity()==1}">TA发布的作品</a>
+                <a th:href="@{'/users/'+${user.name}+'/order'}"
+                   th:class="${section=='order'}?'active list-group-item':'list-group-item'"
+                   th:if="${user.getIdentity()==1}">TA完成的订单</a>
+            </div>
+        </div>
+
+        <!--他发布的企划-->
+        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9" th:if="${section == 'demands'}">
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 panel panel-default users-demand-size margin-top-0px"
+                 th:each="demand : ${demands}">
+                <a th:href="@{'/demand/'+${demand.id}}">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 demandSquare-demand-onclick-size">
+                        <div class="demandSquare-demand-css">
+
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6
+                                demandSquare-demand-title" th:text="${demand.title}"></div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6
+                                demandSquare-demand-price" th:text="${demand.price}"></div>
+                            </div>
+                            <!--我发布的-->
+                            <div th:if="${session.user != null && session.user.id==demand.creator}">
+                                <span class="text-desc">我发布的</span>
+                            </div>
+                            <br>
+                            <div class="row" th:if="${session.user != null && session.user.id==demand.creator}">
+                                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                    <span class="glyphicon glyphicon-tag demandSquare-demand-tag-size"
+                                          aria-hidden="true"></span>
+                                    <span th:text="${demand.purpose}"></span>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                    <span class="glyphicon glyphicon-calendar demandSquare-demand-tag-size"
+                                          aria-hidden="true"></span>
+                                    <span th:text="${demand.closingDate}"></span>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                    <span class="glyphicon glyphicon-flag demandSquare-demand-tag-size"
+                                          aria-hidden="true"></span>
+                                    <span th:text="${demand.enlistCount}"></span>
+                                </div>
+                            </div>
+                            <!--别人发布的-->
+                            <div class="row margin-top-20px"
+                                 th:if="${session.user == null || session.user.id!=demand.creator}">
+                                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                    <span class="glyphicon glyphicon-tag demandSquare-demand-tag-size"
+                                          aria-hidden="true"></span>
+                                    <span th:text="${demand.purpose}"></span>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                    <span class="glyphicon glyphicon-calendar demandSquare-demand-tag-size"
+                                          aria-hidden="true"></span>
+                                    <span th:text="${demand.closingDate}"></span>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                    <span class="glyphicon glyphicon-flag demandSquare-demand-tag-size"
+                                          aria-hidden="true"></span>
+                                    <span th:text="${demand.enlistCount}"></span>
+                                </div>
+                            </div>
+
+                            <hr>
+                            <div class="row margin-top--5px">
+                                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 demandSquare-demand-description-title">
+                                    详情摘要
+                                </div>
+                                <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 demandSquare-demand-description"
+                                     th:text="${demand.description}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <!--他的作品-->
+        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9" th:if="${section == 'paintings'}">
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 panel panel-default users-paintings-size"
+                 th:each="painting : ${paintings}">
+                <a th:href="@{'/paintings/'+${painting.id}}">
+                    <img class="img-rounded users-paintings" th:src="${painting.paintingsUrl}">
+                </a>
+            </div>
+        </div>
+
+        <!--完成的订单-->
+        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 panel panel-default"
+             th:if="${section == 'order' && user.identity==1}">
+            <h2><span th:text="${sectionName}"></span></h2>
+            <hr>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:each="order : ${pagination.orderDTOs}">
+                <div class="row order-size panel panel-default">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 order-title">
+                        <div class="margin-10px">
+                            <span class="margin-right-30px"
+                                  th:text="${#dates.format(order.gmtCreate,'yyyy-MM-dd')}"></span>
+                            订单号：<span th:text="${order.orderNumber}"></span>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12  margin-10px">
+                        <div>
+                            <span class="text-desc">
+                                <span>企划标题</span>
+                                <span class="margin-left-148px">企划方</span>
+                                <span class="margin-left-160px">交稿时间</span>
+                                <span class="margin-left-148px">订单状态</span>
+                            </span>
+                        </div>
+                        <div class="row profile-demand-description-left-bottom margin-top-5px">
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a th:href="@{'/demand/'+${order.demandId}}" style="text-decoration:none;">
+                                    <span class="order-word-size" th:text="${order.demand.title}"></span>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a th:href="@{'/users/'+${order.user.name}+'/demands'}" style="text-decoration:none;">
+                                    <span class="order-word-size" th:text="${order.user.name}"></span>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <span class="order-word-size" th:text="${order.enlist.closingDate}"></span>
+                            </div>
+                            <!--状态-->
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <span class="order-word-size-state34" th:if="${order.state==4}">已完成</span>
+                            </div>
+                        </div>
+                        <hr class="order-hr">
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 margin-top--10px">
+                        <div class="order-left margin-left-10px">
+                            <span class="text-desc">稿酬:</span>
+                            <span class="board-content-right-word margin-left-10px" th:text="${order.price}"></span>
+                            <span class="board-content-right-size">RMB</span>
+                        </div>
+
+
+                        <!--待评价-->
+                        <div class="order-right" th:if="${order.state==3}">
+                            <button type="button" class="order-pay-button-disabled" disabled="disabled">
+                                待评价
+                            </button>
+                        </div>
+                        <!--已完成-->
+                        <div class="order-right order-evaluate" th:if="${order.state==4}">
+                            <span class="text-desc">企划方评价:</span>
+                            <span th:text="${order.evaluate.content}"></span>
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>></div>
+<div th:insert="footer :: foot"></div>
+
+</body>
+</html>
