@@ -67,26 +67,78 @@
                         <a th:href="@{'/users/'+${user.name}+'/demands'}" th:text="${user.name}"></a>
                     </h4>
                 </div>
-                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                <div class="col-lg-4 col-md-5 col-sm-5 col-xs-5">
                     <h4>
-                        <span>密码</span>
-                        <span th:text="${user.password}"></span>
+                        <span>支付宝：</span>
+                        <span th:if="${user.alipayNumber==null}">未绑定</span>
+                        <span th:if="${user.alipayNumber!=null}" th:text="${user.alipayNumber}"></span>
                     </h4>
                 </div>
-                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                    <h4>
-                        <span>支付宝：未绑定</span>
-                        <span th:text="${user.alipayNumber}"></span>
-                    </h4>
-                </div>
-                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                <div class="col-lg-3 col-md-2 col-sm-2 col-xs-2">
                     <h4>
                         <span>身份码</span>
                         <span th:text="${user.identity}"></span>
                     </h4>
                 </div>
+                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 backStage-modify">
+                    <a href="javascript:void(0);" onclick="showAllApply(this)" th:userId="${user.id}">
+                        <span class="setting-list_modify">修改</span>
+                    </a>
+                </div>
+                <!--修改弹窗-->
+                <div class="modal fade" th:id="${'allFileMModal'+user.id}" role="dialog"
+                     aria-labelledby="exampleModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title demand-tips-size" id="allFileTitle">修改用户信息:
+                                    <span th:text="${user.name}"></span>
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <input type="hidden" th:id="${'userId'+user.id}" th:value="${user.id}">
+                                    <label class="col-form-label margin-top-15px">登陆密码：</label>
+                                    <textarea class="form-control" rows="1"
+                                              th:id="${'contentPassword'+user.id}"
+                                              maxlength="12"
+                                              placeholder="登陆密码(最多12位)"
+                                              style="resize: none"></textarea>
+                                </form>
+                                <form>
+                                    <label class="col-form-label margin-top-15px">支付宝：</label>
+                                    <textarea class="form-control" rows="1"
+                                              th:id="${'contentAlipay'+user.id}"
+                                              maxlength="11"
+                                              placeholder="支付宝账户"
+                                              style="resize: none"></textarea>
+                                </form>
+                                <form>
+                                    <label class="col-form-label margin-top-15px">身份：</label>
+                                    <textarea class="form-control" rows="1"
+                                              th:id="${'contentIdentity'+user.id}"
+                                              maxlength="1"
+                                              placeholder="身份码(会员(0)；画师(1)；管理员(2))"
+                                              style="resize: none"></textarea>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="demand-enlist-selected-button"
+                                        id="createFileSureBut"
+                                        th:userId="${user.id}"
+                                        onclick="modifyAll(this)">确定
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
+
             <!--分页-->
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <nav aria-label="Page navigation">
@@ -159,17 +211,23 @@
                     </div>
 
                     <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 margin-left--65px">
-                        <a th:if="${demand.state==0}" style="text-decoration:none;">
-                            <button class="profile-demand-description-button1" type="button">停止该企划</button>
-                        </a>
-                        <a th:if="${demand.state!=0}" style="text-decoration:none;">
-                            <button class="profile-demand-description-button1-stop" type="button" disabled="disabled">
-                                已经停止
+                        <form action="/demandStop" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="demandId" id="demandId"
+                                   th:value="${demand.id}">
+                            <button th:if="${demand.state==0}" class="profile-demand-description-button1" type="submit">
+                                停止该企划
                             </button>
-                        </a>
-                        <a class="margin-left-20px" th:href="@{'/board/'+${demand.id}}">
-                            <button class="profile-demand-description-button2" type="button">进入工作板</button>
-                        </a>
+
+                            <a th:if="${demand.state!=0}" style="text-decoration:none;">
+                                <button class="profile-demand-description-button1-stop" type="button"
+                                        disabled="disabled">
+                                    已经停止
+                                </button>
+                            </a>
+                            <a class="margin-left-20px" th:href="@{'/board/'+${demand.id}}">
+                                <button class="profile-demand-description-button2" type="button">进入工作板</button>
+                            </a>
+                        </form>
                     </div>
 
 
@@ -394,11 +452,17 @@
 
                 </div>
                 <div class="backStage-apply-style-right">
-                    <input type="hidden" name="userId" id="userId"
-                           th:value="${user.id}">
-                    <button class="backStage-apply--button1" type="button" onclick="approved()">通过</button>
+                    <button class="backStage-apply--button1"
+                            type="button"
+                            onclick="approved(this)"
+                            th:userId="${user.id}">通过
+                    </button>
                     <br>
-                    <button class="backStage-apply--button2" type="button" onclick="auditFailed()">驳回</button>
+                    <button class="backStage-apply--button2"
+                            type="button"
+                            onclick="auditFailed(this)"
+                            th:userId="${user.id}">驳回
+                    </button>
                 </div>
             </div>
 
@@ -542,7 +606,6 @@
             </div>
 
         </div>
-
 
 
     </div>

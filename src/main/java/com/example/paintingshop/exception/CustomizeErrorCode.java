@@ -27,6 +27,8 @@ public enum  CustomizeErrorCode implements ICustomizeErrorCode{
     REPEAT_NOTIFICATION(2023,"已经通知对方，请等待"),
     TOO_MORE(2024,"你生成了太多未支付订单啦，不能再开始新的了,请先处理其他未支付订单"),
     ERROR_CODE(2025,"错误的请求码"),
+    ERROR_IDENTITY_CODE(2026,"身份码只能输0、1、2哦"),
+    ERROR_ALIPAY_LENGTH(2027,"支付宝账号为11位数字"),
 
 
     ;

@@ -51,14 +51,12 @@ public class DrawUploadController {
     public String doPublish(@RequestParam(value = "paintingsType", required = false) Integer paintingsType,
                             @RequestParam(value = "paintingsStyle", required = false) Integer paintingsStyle,
                             @RequestParam(value = "paintingsMethod", required = false) Integer paintingsMethod,
-                            HttpServletRequest request,
-                            Model model) {
+                            HttpServletRequest request) {
 
 
         User user = (User) request.getSession().getAttribute("user");
         if (user == null) {
-            model.addAttribute("error", "用户未登录");
-            return "drawUpload";
+            throw new CustomizeException(CustomizeErrorCode.NO_LOGIN);
         }
 
 
@@ -140,7 +138,7 @@ public class DrawUploadController {
         }
 
 
-        return "redirect:/profile/works";
+        return "redirect:/profile/enlist";
     }
 
 }

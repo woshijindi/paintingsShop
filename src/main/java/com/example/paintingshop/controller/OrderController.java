@@ -47,12 +47,16 @@ public class OrderController {
 
 
         User user = (User) request.getSession().getAttribute("user");       //当前操作的用户
-        if (user==null){
+        if (user == null) {
             return ResultDTO.errorOf(CustomizeErrorCode.NO_LOGIN);
         }
 
-
         Demand demand1 = demandMapper.selectByPrimaryKey(orderCreateDTO.getDemandId());
+        if (user.getId() != demand1.getCreator()) {
+            return ResultDTO.errorOf(CustomizeErrorCode.ERROR_IDENTITY);
+        }
+
+
         if (demand1.getState() != DemandStateEnum.NOT_ACCEPTED.getId()) {
             return ResultDTO.errorOf(CustomizeErrorCode.CHOICE_ENLIST_FAIL_DEMAND);
         }
@@ -67,7 +71,7 @@ public class OrderController {
                 .andStateEqualTo(OrderStateEnum.TO_BE_PAID.getId());
         List<Order> orders = orderMapper.selectByExample(example);
 
-        if (orders.size()>5){
+        if (orders.size() > 5) {
             return ResultDTO.errorOf(CustomizeErrorCode.TOO_MORE);
         }
 
@@ -103,7 +107,7 @@ public class OrderController {
     @PostMapping("/orderPaying")
     public String orderPaying(@RequestParam(value = "demandId", required = false) Long demandId,
                               @RequestParam(value = "orderNumber", required = false) String orderNumber,
-                              @RequestParam(value = "enlistId", required = false) Long enlistId){             //订单确认收货
+                              @RequestParam(value = "enlistId", required = false) Long enlistId) {             //订单确认收货
 
 
         OrderExample example = new OrderExample();
@@ -133,11 +137,10 @@ public class OrderController {
     }
 
 
-
     @PostMapping("/orderReturn")
     public String orderReturn(@RequestParam(value = "demandId", required = false) Long demandId,
                               @RequestParam(value = "orderNumber", required = false) String orderNumber,
-                              @RequestParam(value = "enlistId", required = false) Long enlistId){             //订单退款
+                              @RequestParam(value = "enlistId", required = false) Long enlistId) {             //订单退款
 
 
         OrderExample example = new OrderExample();
@@ -167,12 +170,10 @@ public class OrderController {
     }
 
 
-
-
     @PostMapping("/orderPayingPainter")
     public String orderPayingPainter(@RequestParam(value = "demandId", required = false) Long demandId,
-                              @RequestParam(value = "orderNumber", required = false) String orderNumber,
-                              @RequestParam(value = "enlistId", required = false) Long enlistId){             //订单确认收货
+                                     @RequestParam(value = "orderNumber", required = false) String orderNumber,
+                                     @RequestParam(value = "enlistId", required = false) Long enlistId) {             //订单确认收货
 
 
         OrderExample example = new OrderExample();
@@ -200,8 +201,6 @@ public class OrderController {
         return "redirect:/profile/myOrder";
 
     }
-
-
 
 
 }

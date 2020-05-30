@@ -21,8 +21,11 @@
                 <h1 class="login-logo">注册-画商店</h1>
                 <form class="navbar-form navbar-left margin-left-120px" action="/register" method="post">
                     <div class="form-group">
-                        <input type="text" name="username" th:value="${username}" class="form-control login-box margin-top-15px"
-                               placeholder="设置用户名">
+                        <input type="text" name="username"
+                               th:value="${username}"
+                               class="form-control login-box margin-top-15px"
+                               maxlength="8"
+                               placeholder="设置用户名（最长8位）">
                     </div>
                     <br>
                     <div class="form-group">

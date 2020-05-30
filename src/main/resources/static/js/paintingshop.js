@@ -110,9 +110,9 @@ function showCreateModal(title) {
 }
 
 //评价弹框
-function showEvaluateModal(title) {
-    $("#evaluateFileTitle").text(title);
-    $('#evaluateFileMModal').modal('show');
+function showEvaluateModal(e) {
+    var orderId = e.getAttribute("orderId");
+    $('#evaluateFileMModal'+orderId).modal('show');
 }
 
 
@@ -142,6 +142,7 @@ function showAlipayApply(title) {
     $("#alipayFileTitle").text(title);
     $('#alipayFileMModal').modal('show');
 }
+
 
 //发送画师申请
 function apply() {
@@ -299,15 +300,14 @@ function unFollow() {
 }
 
 //评价订单
-function orderEvaluate() {
+function orderEvaluate(e) {
 
-
-    var receiver = $("#receiver").val();
-    var receiverType = $("#receiverType").val();
-    var demandId = $("#demandId").val();
-    var orderId = $("#orderId").val();
-    var enlistId = $("#enlistId").val();
-    var content = $("#content").val();
+    var orderId = e.getAttribute("orderId");
+    var receiver = $("#receiver"+orderId).val();
+    var receiverType = $("#receiverType"+orderId).val();
+    var demandId = $("#demandId"+orderId).val();
+    var enlistId = $("#enlistId"+orderId).val();
+    var content = $("#content"+orderId).val();
 
     if (content != "") {
 
@@ -349,9 +349,9 @@ function orderEvaluate() {
 }
 
 //审核通过
-function approved() {
+function approved(e) {
 
-    var userId = $("#userId").val();
+    var userId = e.getAttribute("userId");
 
 
     $.ajax({
@@ -379,8 +379,8 @@ function approved() {
 }
 
 //审核不通过
-function auditFailed() {
-    var userId = $("#userId").val();
+function auditFailed(e) {
+    var userId = e.getAttribute("userId");
 
 
     $.ajax({
@@ -486,6 +486,51 @@ function modifyAlipay() {
     })
 
 }
+//修改用户信息弹窗
+function showAllApply(e) {
+    var userId = e.getAttribute("userId");
 
 
+    $('#allFileMModal'+userId).modal('show');
 
+}
+
+//修改用户信息
+function modifyAll(e) {
+    var userId = e.getAttribute("userId");
+    var contentPassword = $("#contentPassword"+userId).val();
+    var contentAlipay = $("#contentAlipay"+userId).val();
+    var contentIdentity = $("#contentIdentity"+userId).val();
+
+
+    $.ajax({
+        type: "POST",
+        url: "/modifyAll",
+        contentType: 'application/json',
+        data: JSON.stringify({
+            "userId": userId,
+            "password": contentPassword,
+            "alipayNumber": contentAlipay,
+            "identity": contentIdentity,
+
+        }),
+        success: function (response) {
+            if (response.code == 200) {
+                window.location.reload();
+                confirm("修改成功~");
+            } else {
+                alert(response.message);
+            }
+
+            console.log(response);
+        },
+        dataType: "json"
+    })
+
+}
+
+//修改头像弹窗
+function showUrlApply(title) {
+    $("#urlFileTitle").text(title);
+    $('#urlFileMModal').modal('show');
+}

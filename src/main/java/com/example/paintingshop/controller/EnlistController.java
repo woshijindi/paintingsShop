@@ -87,7 +87,7 @@ public class EnlistController {
 
         Enlist enlist = new Enlist();
         enlist.setId(enlistId);
-        enlist.setState(EnlistStateEnum.GIVE_UP.getId());              //企划状态修改为已经放弃
+        enlist.setState(EnlistStateEnum.GIVE_UP.getId());              //应征状态修改为已经放弃
         enlistService.update(enlist);
 
         Enlist enlist1 = enlistMapper.selectByPrimaryKey(enlistId);

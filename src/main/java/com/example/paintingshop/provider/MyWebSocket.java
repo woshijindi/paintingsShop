@@ -99,7 +99,6 @@ public class MyWebSocket {
         User user = myWebSocket.userMapper.selectByPrimaryKey(nickId);
 
         //从客户端传过来的数据是json数据，所以这里使用jackson进行转换为SocketMsg对象，
-// 然后通过socketMsg的type进行判断是单聊还是群聊，进行相应的处理:
         ObjectMapper objectMapper = new ObjectMapper();
         SocketMsgDTO socketMsg;
 
